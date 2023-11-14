@@ -16,52 +16,67 @@ struct Record {
     char cidade[max_str_length];
     char pais[max_str_length];
     char senha[max_str_length];
-    /*clientes*/
+};
+
+struct clientes {
     char nomeCli[max_str_length];
     char telefoneCli[max_str_length];
     char emailCli[max_str_length];
     char cidadeCli[max_str_length];
+    int numeroTicket[max_str_length];
+    int horarioSessao[max_str_length];
+    int tipoIngresso[max_str_length];
 };
 
 /*escrever os dados no csv*/
 void escreverCSV(FILE *file, struct Record records[], int numRecord){
-
-    int i;
-    for (i = 0; i < numRecord; i++){
+    for (int i = 0; i < numRecord; i++){
         fprintf(file, "%s,%s,%s,%s,%s,%s,%s\n",
-            records[i].nome,
-            records[i].telefone,
-            records[i].email,
-            records[i].bairro,
-            records[i].cidade,
-            records[i].pais,
+            records[i].nome, records[i].telefone,
+            records[i].email, records[i].bairro,
+            records[i].cidade, records[i].pais,
             records[i].senha);
-
-            // records[i].nomeCli,
-            // records[i].telefoneCli,
-            // records[i].emailCli,
-            // records[i].cidadeCli);
     }
 }
 
 /*ler dados do csv*/
 void lerCSV(FILE *file, struct Record records[], int *numRecord){
     char line[max_str_length * 7]; /*tamanho maximo de uma linha*/
-    sscanf(line, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49s",
+    sscanf(line, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,]%49[^,],%49s",
             records[*numRecord].nome, records[*numRecord].telefone,
-            records[*numRecord].email,records[*numRecord].bairro,
-            records[*numRecord].cidade, records[*numRecord].pais,
-            records[*numRecord].senha, records[*numRecord].nomeCli,
-            records[*numRecord].telefoneCli, records[*numRecord].emailCli,
-            records[*numRecord].cidadeCli);
-    (*numRecord)++;
+            records[*numRecord].email,records[*numRecord].bairro, 
+            records[*numRecord].cidade, records[*numRecord].pais, 
+            records[*numRecord].senha,
+
+    (*numRecord)++);
+}
+
+void escreverCSVCli(FILE *file2, struct clientes dados[], int *numDados){
+    for (int i = 0; i < numDados; i++){
+        fprintf(file2, "%s,%s,%s,%s,%s,%s,%s\n", 
+        dados[i].nomeCli, dados[i].emailCli, dados[i].cidadeCli,
+        dados[i].telefoneCli, dados[i].numeroTicket, dados[i].horarioSessao,
+        dados[i].tipoIngresso);
+    }
+}
+
+void lerCSVCli(FILE *file2, struct clientes dados[], int *numDados){
+    char linha[max_str_length * 7];
+    sscanf(linha, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49s", 
+        dados[*numDados]. nomeCli, dados[*numDados].emailCli, dados[*numDados].cidadeCli,
+        dados[*numDados].telefoneCli, dados[*numDados].numeroTicket, dados[*numDados].horarioSessao,
+        dados[*numDados].tipoIngresso,
+        
+    (*numDados)++);
 }
 
 
 int main() {
     struct Record records[max_rec];
-
+    struct clientes dados[max_rec];
+    
     int numRecord = 0;
+    int numDados = 0;
     char buscaEmail[max_str_length];
     char buscaSenha[max_str_length];
 
@@ -72,13 +87,19 @@ int main() {
     printf("////////////////////////////////////////////////////////////////\n\n");
     printf("Como deseja proseguir?\n\n");
 
-
+    
 
     /*carrega os dados do csv ao iniciar o código*/
     FILE *file = fopen("info.csv" , "r");
     if (file != NULL){/*basicamente pra ver se o csv esta funciondo, onde ai diz se diferente de 0/null/negativo/desligado*/
         lerCSV(file, records, &numRecord);
         fclose(file);
+    }
+
+    FILE *file2 = fopen("infoCli.csv" , "r");
+    if(file2 != NULL){
+        lerCSVCli(file2, dados, &numDados);
+        fclose(file2);
     }
 
     while(1){
@@ -103,8 +124,7 @@ int main() {
         switch (escolha){
             case 1:
             /*Fazer cadastro funcionário*/
-                // file = fopen("info.csv", "w");
-                // escreverCSV("info.csv", records, numRecord);
+                file = fopen("info.csv", "w"); 
                 if(numRecord < max_rec){
                     /*talez adicionar a solicitação de algum documento*/
                     printf("Digite seu nome: ");
@@ -135,13 +155,12 @@ int main() {
                     fgets(records[numRecord].senha, sizeof(records[numRecord].senha), stdin);
                     records[numRecord].senha[strcspn(records[numRecord].senha, "\n")] = '\0';
 
-                    puts("\n\n");
-
                     numRecord ++;
                 }
                 else{
                     printf("numero de cadastros máximo atingido");
                 }
+                fclose(file);
             break;
 
             case 2:
@@ -150,27 +169,24 @@ int main() {
                 printf("Digite seu email:");
                 fgets(buscaEmail, sizeof(buscaEmail), stdin);
                 buscaEmail[strspn(buscaEmail, "\n")] = '\0';
-                printf(buscaEmail);
+
                 printf("Digite sua senha:");
                 fgets(buscaSenha, sizeof(buscaSenha), stdin);
                 buscaSenha[strspn(buscaSenha, "\n")] = '\0';
 
-                int i;
-                for (i = 0; i < numRecord; i++) {
+                for (int i = 0; i < numRecord; i++) {
                     if(strcmp(records[i].email, buscaEmail) == 0){
                         printf(buscaEmail);
                         if(strcmp(records[i].senha, buscaSenha) == 0){
                             /*ir para pagina de cadastro de cliente*/
-                            printf("ok, FUNCIONA!!!\n\n");
-                            break;
+                            printf("ok");
                         }
                         else{
                             printf("Senha incorreta\n");
-
                         }
                     }
                     else{
-                        printf("Email não cadastrado\n\n\n");
+                        printf("Email não cadastrado\n");
                     }
                 }
             break;
@@ -179,40 +195,44 @@ int main() {
                 /*cadastro cliente*/
                 /*duvida se precisaria criar outra base struct ou se melhor linkar com outro
                 codigo essa parte ou somente criar outra base csv*/
-                file = fopen("info.csv", "w");
-                if(numRecord < max_rec){
+
+                file = fopen("infoCli.csv", "w"); 
+                if(numDados < max_rec){
                     /*talez adicionar a solicitação de algum documento*/
                     printf("Digite seu nome: ");
-                    fgets(records[numRecord].nomeCli, sizeof(records[numRecord].nomeCli), stdin);
-                    records[numRecord].nomeCli[strcspn(records[numRecord].nomeCli, "\n")] = '\0';/*remove quebra de linha // strcspn calcula tamanho do segmento inicial*/
+                    fgets(dados[numDados].nomeCli, sizeof(dados[numDados].nomeCli), stdin);
+                    dados[numDados].nomeCli[strcspn(dados[numDados].nomeCli, "\n")] = '\0';/*remove quebra de linha // strcspn calcula tamanho do segmento inicial*/
 
                     printf("Digite seu telefone:");
-                    fgets(records[numRecord].telefoneCli, sizeof(records[numRecord].telefoneCli), stdin);
-                    records[numRecord].telefoneCli[strcspn(records[numRecord].telefoneCli, "\n")] = '\0';
+                    fgets(dados[numDados].telefoneCli, sizeof(dados[numDados].telefoneCli), stdin);
+                    dados[numDados].telefoneCli[strcspn(dados[numDados].telefoneCli, "\n")] = '\0';
 
                     printf("Digite seu email:");
-                    fgets(records[numRecord].emailCli, sizeof(records[numRecord].emailCli), stdin);
-                    records[numRecord].emailCli[strcspn(records[numRecord].emailCli, "\n")] = '\0';
+                    fgets(dados[numDados].emailCli, sizeof(dados[numDados].emailCli), stdin);
+                    dados[numDados].emailCli[strcspn(dados[numDados].emailCli, "\n")] = '\0';
 
                     printf("Digite sua cidade:");
-                    fgets(records[numRecord].cidadeCli, sizeof(records[numRecord].cidadeCli), stdin);
-                    records[numRecord].cidadeCli[strcspn(records[numRecord].cidadeCli, "\n")] = '\0';
+                    fgets(dados[numDados].cidadeCli, sizeof(dados[numDados].cidadeCli), stdin);
+                    dados[numDados].cidadeCli[strcspn(dados[numDados].cidadeCli, "\n")] = '\0';
 
-                    numRecord ++;
+                    numDados++;
                 }
 
                 printf("Deseja um ingresso para qual horário?\n");
 
+                printf("Sessões diponiveis: \n 1. 9hrs \n 2. 12 hrs \n 3. 16 hrs \n 4. 20 hrs\n");
+                fgets(dados[numDados].horarioSessao, sizeof(dados[numDados].horarioSessao), stdin);
+                    dados[numDados].horarioSessao[strcspn(dados[numDados].horarioSessao, "\n")] = '\0';
+
                 int horario;
 
-                printf("Sessões diponiveis: \n 1. 9hrs \n 2. 12 hrs \n 3. 16 hrs \n 4. 20 hrs\n");
-                scanf("%d", &horario);
+                horario = horarioSessao; //pensei em de alguma forma colocar um ponteiro para poder usar de parametro
 
-                switch (horario)
+                switch (horario) //descobrir forma de puxar o dado do fgets
                 {
                 case 1:
                     printf("Ingresso selecionado para as 9 hrs.\n");
-                    break;
+                break;
 
                 case 2:
                     printf("Ingresso selecionado para as 12 hrs.\n");
@@ -229,35 +249,49 @@ int main() {
                 default:
                     printf("Essa opção não esta dísponivel.\n");
                 break;
-                }
+                } 
 
                 int entrada;
 
                 printf("Gostaria de uma entrada:\n 1. inteira\n 2. meia\n");
-                scanf("%d", &entrada);
+                fgets(dados[numDados].tipoIngresso, sizeof(dados[numDados].tipoIngresso), stdin);
+                    dados[numDados].tipoIngresso[strcspn(dados[numDados].tipoIngresso, "\n")] = '\0';
+
+                switch ()
+                {
+                case 1:
+                    printf("Você escolheu entrada inteira");
+                break;
+                case 2:
+                    printf("Você escolheu entreda meia");
+                break;
+                }
 
                 printf("Aqui esta o código do seu ticket %d\n", rand());
+
+                fclose("infoCli.csv");
+
             break;
-           case 4:
+           case 4:               
 
                 printf("Digite o código do seu ticket:\n");
 
                 float ticket;
-
+                
                 scanf("%f", &ticket);
 
                 printf("ok, ingresso validado\n");
                 printf("Aproveite sua sessão.\n");
 
-                printf("//////////////////////////////////////////////////////////////\n");
+                printf("/////////////////////////////////////////////////////////////////\n");
 
                 printf("Bem vindo(a) a nossa exposição sobre o centenário da Disney!!\n");
 
-                printf("////////////////////////////////////////////////////////////////");
+                printf("/////////////////////////////////////////////////////////////////");
 
             break;
 
-            case 5:
+            case 5:     
                 /*lista de clientes*/
                 /*talvez adicionar uma forma de login de administrador para acesso deste caso*/
             break;
@@ -265,11 +299,10 @@ int main() {
             case 6:
                 /*lista funcionários*/
                 /*talvez adicionar uma forma de login de administrador para acesso deste caso*/
-
+                file = fopen("info.csv", "r");
                 if(numRecord > 0){
-                    int i;
-                    for(i = 1; i < numRecord; i++){
-                        printf("Cadastro %d:\n", i);
+                    for(int i = 1; i < numRecord; i++){
+                        printf("Cadastro %d:\n", i + 1);
                         printf("Nome: %s\n", records[i].nome);
                         printf("Telefone: %s\n", records[i].telefone);
                         printf("Email: %s\n", records[i].email);
@@ -298,16 +331,24 @@ int main() {
 
             case 9:
                 /*salvar arquivo*/
-                printf("Estou aqui!");
                 file = fopen("info.csv", "w");
                 if (file != NULL){
-                    printf("Agora aqui!");
                     escreverCSV(file, records, numRecord);
                     fclose(file);
                     printf("Dados salvos no arquivo 'info.csv'.\n");
                 }
                 else{
-                    printf("Erro ao abrir o arquivo para salvar os dados.");
+                    printf("Erro ao abrir o arquivo para salvar os dados de funcionarios.");
+                }
+
+                file2 = fopen("infoCli.csv", "w");
+                if (file2 != NULL){
+                    escreverCSVCli(file2, dados, numDados);
+                    fclose(file2);
+                    printf("Dados salvos no arquivo 'infoCli.csv'.\n");
+                }
+                else{
+                    printf("Erro em salvar dados de clientes");
                 }
 
             break;
@@ -318,7 +359,7 @@ int main() {
                 return 0;
 
             break;
-
+            
             default:
 
             break;
