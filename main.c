@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+#include <time.h>
 
 #define max_rec 100
 #define max_str_length 50
@@ -44,8 +45,8 @@ void lerCSV(FILE *file, struct Record records[], int *numRecord){
     char line[max_str_length * 7]; /*tamanho maximo de uma linha*/
     sscanf(line, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,]%49[^,],%49s",
             records[*numRecord].nome, records[*numRecord].telefone,
-            records[*numRecord].email,records[*numRecord].bairro, 
-            records[*numRecord].cidade, records[*numRecord].pais, 
+            records[*numRecord].email,records[*numRecord].bairro,
+            records[*numRecord].cidade, records[*numRecord].pais,
             records[*numRecord].senha,
 
     (*numRecord)++);
@@ -53,7 +54,7 @@ void lerCSV(FILE *file, struct Record records[], int *numRecord){
 
 void escreverCSVCli(FILE *file2, struct clientes dados[], int *numDados){
     for (int i = 0; i < numDados; i++){
-        fprintf(file2, "%s,%s,%s,%s,%s,%s,%s\n", 
+        fprintf(file2, "%s,%s,%s,%s,%s,%s,%s\n",
         dados[i].nomeCli, dados[i].emailCli, dados[i].cidadeCli,
         dados[i].telefoneCli, dados[i].numeroTicket, dados[i].horarioSessao,
         dados[i].tipoIngresso);
@@ -62,19 +63,41 @@ void escreverCSVCli(FILE *file2, struct clientes dados[], int *numDados){
 
 void lerCSVCli(FILE *file2, struct clientes dados[], int *numDados){
     char linha[max_str_length * 7];
-    sscanf(linha, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49s", 
+    sscanf(linha, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49s",
         dados[*numDados]. nomeCli, dados[*numDados].emailCli, dados[*numDados].cidadeCli,
         dados[*numDados].telefoneCli, dados[*numDados].numeroTicket, dados[*numDados].horarioSessao,
         dados[*numDados].tipoIngresso,
-        
+
     (*numDados)++);
 }
 
+/*struct tm{
+    int tm_sec; //representa os segundos de 0 a 59
+    int tm_min; //representa os minutos de 0 a 59
+    int tm_hour; //representa as horas de 0 a 24
+    int tm_mday; //dia do mês de 1 a 31
+    int tm_mon; //representa os meses do ano de 0 a 11
+    int tm_year; //representa o ano a partir de 1900
+    int tm_wday; //dia da semana de 0 (domingo) até 6 (sábado)
+    int tm_yday; // dia do ano de 1 a 365
+    int tm_isdst; //indica horário de verão se for diferente de zero
+};*/
+
 
 int main() {
+    setlocale(LC_ALL, "Portuguese");
+
     struct Record records[max_rec];
     struct clientes dados[max_rec];
-    
+    struct tm *data_hora_atual;
+
+    time_t segundos; // armazena time_t em segundos
+    time(&segundos); // obtem tempo em segundos
+
+    data_hora_atual = localtime(&segundos);// converte segundos para hora atual
+
+    printf("\nHora ........: %d:",data_hora_atual->tm_hour);//hora
+
     int numRecord = 0;
     int numDados = 0;
     char buscaEmail[max_str_length];
@@ -87,7 +110,7 @@ int main() {
     printf("////////////////////////////////////////////////////////////////\n\n");
     printf("Como deseja proseguir?\n\n");
 
-    
+
 
     /*carrega os dados do csv ao iniciar o código*/
     FILE *file = fopen("info.csv" , "r");
@@ -107,7 +130,7 @@ int main() {
         printf("1. Quero me tornar vendedor\n");
         printf("2. Já sou vendedor cadastrado\n");
         printf("3. Comprar ingresso\n");
-        printf("4. Entrar na apresentação");
+        printf("4. Entrar na apresentação\n");
         printf("5. Listar clientes cadastrados\n");
         printf("6. Listar funcionários cadastrados\n");
         printf("7. Editar registro funcionário\n");
@@ -124,7 +147,7 @@ int main() {
         switch (escolha){
             case 1:
             /*Fazer cadastro funcionário*/
-                file = fopen("info.csv", "w"); 
+                file = fopen("info.csv", "w");
                 if(numRecord < max_rec){
                     /*talez adicionar a solicitação de algum documento*/
                     printf("Digite seu nome: ");
@@ -196,7 +219,7 @@ int main() {
                 /*duvida se precisaria criar outra base struct ou se melhor linkar com outro
                 codigo essa parte ou somente criar outra base csv*/
 
-                file = fopen("infoCli.csv", "w"); 
+                file = fopen("infoCli.csv", "w");
                 if(numDados < max_rec){
                     /*talez adicionar a solicitação de algum documento*/
                     printf("Digite seu nome: ");
@@ -220,13 +243,13 @@ int main() {
 
                 printf("Deseja um ingresso para qual horário?\n");
 
-                printf("Sessões diponiveis: \n 1. 9hrs \n 2. 12 hrs \n 3. 16 hrs \n 4. 20 hrs\n");
+                /*printf("Sessões diponiveis: \n 1. 9hrs \n 2. 12 hrs \n 3. 16 hrs \n 4. 20 hrs\n");
                 fgets(dados[numDados].horarioSessao, sizeof(dados[numDados].horarioSessao), stdin);
                     dados[numDados].horarioSessao[strcspn(dados[numDados].horarioSessao, "\n")] = '\0';
 
                 int horario;
 
-                horario = horarioSessao; //pensei em de alguma forma colocar um ponteiro para poder usar de parametro
+                //horario = horarioSessao; //pensei em de alguma forma colocar um ponteiro para poder usar de parametro
 
                 switch (horario) //descobrir forma de puxar o dado do fgets
                 {
@@ -249,7 +272,7 @@ int main() {
                 default:
                     printf("Essa opção não esta dísponivel.\n");
                 break;
-                } 
+                }
 
                 int entrada;
 
@@ -265,19 +288,19 @@ int main() {
                 case 2:
                     printf("Você escolheu entreda meia");
                 break;
-                }
+                }*/
 
                 printf("Aqui esta o código do seu ticket %d\n", rand());
 
                 fclose("infoCli.csv");
 
             break;
-           case 4:               
+           case 4:
 
                 printf("Digite o código do seu ticket:\n");
 
                 float ticket;
-                
+
                 scanf("%f", &ticket);
 
                 printf("ok, ingresso validado\n");
@@ -285,13 +308,67 @@ int main() {
 
                 printf("/////////////////////////////////////////////////////////////////\n");
 
-                printf("Bem vindo(a) a nossa exposição sobre o centenário da Disney!!\n");
+                printf("  Bem-vindos às histórias dos museus e exposições da Disney! Aqui, você pode explorar a fascinante jornada da Disney na indústria do entretenimento. Desde os primeiros desenhos animados até os incríveis parques temáticos e os filmes contemporâneos, temos várias exposições para você se aprofundar cada vez mais nesse universo fantástico Disney, a história da Disney teve início no início de 1923, quando Walt Disney, originalmente de Kansas City, Missouri, criou um curta-metragem intitulado 'Alice's Wonderland.' Esse curta-metragem apresentou uma atriz infantil interagindo com personagens animados. Após esse feito, Walt Disney mudou-se para Hollywood e uniu forças com seu irmão.\n\n");
 
-                printf("/////////////////////////////////////////////////////////////////");
+                printf("  Assim, em 16 de outubro de 1923, fundaram os Disney Brothers Cartoon Studios. Logo depois, a distribuidora MJ Winkler Production se aproximou deles com o interesse de distribuir uma série de curtas intitulada 'Alice Comedies' , oferecendo cerca de 1,5 mil dólares para essa finalidade. Isso resultou na produção de vários filmes animados de sucesso.\n\n");
+
+                printf("  A empresa começou a prosperar com a criação de seu ícone mais emblemático, o mascote Mickey Mouse, que foi criado em 1928. Mickey estreou em um curta-metragem chamado 'Plane Crazy' e mais tarde em 'Steamboat Willie,' o primeiro desenho animado sonoro da empresa, que se tornou um grande sucesso.\n\n");
+
+                printf("  Com o passar dos anos, a Disney continuou a crescer e lançou animações icônicas, incluindo 'Branca de Neve e os Sete Anões', 'Pinóquio', 'Fantasia', 'Dumbo', 'Bambi', 'Cinderela', e 'Alice no País das Maravilhas.' No entanto, com o início da Segunda Guerra Mundial, os lucros das bilheteiras diminuíram, e muitos dos animadores da Disney foram convocados para o serviço militar.\n\n");
+
+                printf("  Durante a guerra, o estúdio produziu filmes de treinamento e propaganda militar sob encomenda dos governos dos Estados Unidos e Canadá. Em 1942, aproximadamente 90 porcento dos 550 funcionários da Disney estavam envolvidos na produção de filmes relacionados à guerra, como 'A Vitória Pela Força Aérea' e o curta 'Educação para a Morte.\n\n");
+
+                printf("  Após tantos sucessos, a Disney expandiu seus horizontes a partir dos anos 1950, abraçando filmes de ação ao vivo, investindo em televisão e inaugurando parques temáticos.\n\n");
+
+                printf("  Em 1954, Walt Disney usou sua série 'Disneyland' para revelar o conceito do parque temático Disneyland, que era uma realização de seu desejo de um lugar onde pais e filhos pudessem desfrutar juntos. A Disneyland foi aberta ao público em 18 de julho de 1955 e continuou a crescer e atrair visitantes de todo o mundo.\n\n");
+
+                printf("  A Disney também anunciou a Disney World, um complexo de parques temáticos, hotéis e uma cidade planejada, em Orlando, Flórida, em novembro de 1965.\n\n");
+
+                printf("  Os estúdios de cinema da Disney continuaram a produzir filmes populares, incluindo 'A Dama e o Vagabundo', 'A Bela Adormecida' e 'Os 101 Dálmatas.' Um destaque foi o sucesso do musical 'Mary Poppins', que se tornou uma das maiores bilheteiras da história e recebeu cinco prêmios da Academia, incluindo Melhor Atriz para Julie Andrews.\n\n");
+
+                printf("  Em 15 de dezembro de 1966, Walt Disney faleceu devido a complicações relacionadas a um câncer de pulmão. Seu irmão, Roy O. Disney, assumiu como presidente e CEO da empresa, renomeando o Disney World como Walt Disney World em homenagem à visão de seu irmão.\n\n");
+
+                printf("  Hoje, a Disney é uma empresa diversificada, englobando redes de televisão, parques temáticos, produtos colecionáveis e até mesmo roupas. Os estúdios de cinema da Disney também operam como subsidiárias, incluindo Lucasfilm, Marvel Entertainment, Pixar, 20th Century Studios e Searchlight Pictures. A empresa é responsável por canais de televisão como ESPN, Star e National Geographic, bem como canais de programação infantil, como o Disney Channel. Além disso, no exterior, a Disney é a controladora da rede de televisão ABC.\n\n");
+
+                printf("Agora que você já aprendeu como foi criada a disney hora de testar seu conhecimento:\n\n");
+
+                printf("Qual o nome do primeiro curta-metragem feita pelo Walt Disney?\n\n");
+
+                printf("a) Plane Crazy\n\n");
+
+                printf("b) Alice's Wonderland\n\n");
+
+                printf("c) Branca de neve e os sete anões\n\n");
+
+                printf("d) Steamboat Willie\n\n");
+
+                char resposta1;
+
+                scanf("%c", &resposta1);
+
+                printf("agr aqui");
+
+                switch (resposta1)  
+                {
+                case 'b':
+                    printf("Resposta Correta!!\n\n");
+
+                    printf("Parabéns!!\n\n");
+
+                break;
+
+                default:
+                    printf("Resposta errada\n\n");
+
+                    printf("A resposta correta era: Alice's Wonderland, que após seu lançamento ganhou tanta fama que o Walt se mudou para Hollywood e juntou forças com seu irmão, assim criando a Disney Brothers Cartoon Studios em 1923.\n\n");
+                break;
+                }
+
+                printf("estou aqui");
 
             break;
 
-            case 5:     
+            case 5:
                 /*lista de clientes*/
                 /*talvez adicionar uma forma de login de administrador para acesso deste caso*/
             break;
@@ -359,14 +436,14 @@ int main() {
                 return 0;
 
             break;
-            
+
             default:
 
             break;
         }
 
     }
-
+    system("PAUSE");
     return 0;
 }
 
