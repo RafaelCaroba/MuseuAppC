@@ -64,8 +64,8 @@ void escreverCSVCli(FILE *file2, struct clientes dados[], int *numDados){
 }
 
 void lerCSVCli(FILE *file2, struct clientes dados[], int *numDados){
-    char linha[max_str_length * 7];
-    sscanf(linha, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49s",
+    char linha[max_str_length * 9];
+    sscanf(linha, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49s",
         dados[*numDados]. nomeCli, dados[*numDados].emailCli, dados[*numDados].cidadeCli,
         dados[*numDados].telefoneCli, dados[*numDados].numeroTicket, dados[*numDados].horarioSessao,
         dados[*numDados].tipoIngresso, dados[*numDados].genero, dados[*numDados].idade,
@@ -208,6 +208,104 @@ int main() {
                         if(strcmp(records[i].senha, buscaSenha) == 0){
                             /*ir para pagina de cadastro de cliente*/
                             printf("ok");
+
+                            printf("Cadastro do cliente:\n\n");
+
+                            file2 = fopen("infoCli.csv", "w");
+                            if(numDados < max_rec){
+                                /*talez adicionar a solicitação de algum documento*/
+                                printf("Digite o nome: ");
+                                fgets(dados[numDados].nomeCli, sizeof(dados[numDados].nomeCli), stdin);
+                                dados[numDados].nomeCli[strcspn(dados[numDados].nomeCli, "\n")] = '\0';/*remove quebra de linha // strcspn calcula tamanho do segmento inicial*/
+
+                                printf("Digite o telefone:");
+                                fgets(dados[numDados].telefoneCli, sizeof(dados[numDados].telefoneCli), stdin);
+                                dados[numDados].telefoneCli[strcspn(dados[numDados].telefoneCli, "\n")] = '\0';
+
+                                printf("Digite o email:");
+                                fgets(dados[numDados].emailCli, sizeof(dados[numDados].emailCli), stdin);
+                                dados[numDados].emailCli[strcspn(dados[numDados].emailCli, "\n")] = '\0';
+
+                                printf("Digite a cidade de origem:");
+                                fgets(dados[numDados].cidadeCli, sizeof(dados[numDados].cidadeCli), stdin);
+                                dados[numDados].cidadeCli[strcspn(dados[numDados].cidadeCli, "\n")] = '\0';
+
+                                printf("Qual o gênero?");
+                                //colocar como opções onde a pessoa digita a letra //colocar um switch para gravar //ver como declarar parametro quando prof responder
+                                printf("1. Mulher cis\n\n2. Homem cis\n\n3. Mulher trans\n\n4. Homem trans\n\n5. Não Binário\n\n6. Outro\n\n7. Prefiro não dizer\n\n");
+                                
+                                int generoVar;
+                                scanf("%d", &generoVar);
+                                dados[numDados-1].genero = generoVar;
+
+                                printf("Digite a idade:\n");
+
+                                int idadeVar;
+                                scanf("%d", &idadeVar);
+                                dados[numDados-1].idade = idadeVar;
+
+                                printf("Deseja um ingresso para qual horário?\n");
+
+                                printf("Sessões diponiveis: \n 1. 9hrs \n 2. 12 hrs \n 3. 16 hrs \n 4. 20 hrs\n");
+
+                                int horario;
+                                scanf("%d", &horario);
+                                dados[numDados-1].horarioSessao = horario;
+                                
+                                fflush(stdin);
+
+                                switch (horario) //descobrir forma de puxar o dado do fgets
+                                {
+                                case 1:
+                                    printf("Ingresso selecionado para as 9 hrs.\n");
+                                break;
+
+                                case 2:
+                                    printf("Ingresso selecionado para as 12 hrs.\n");
+                                break;
+
+                                case 3:
+                                    printf("Ingresso selecionado para as 16 hrs\n");
+                                break;
+
+                                case 4:
+                                    printf("Ingresso selecionado para as 20 hrs\n");
+                                break;
+
+                                default:
+                                    printf("Essa opção não esta dísponivel.\n");
+                                break;
+                                }
+
+                                printf("Gostaria de uma entrada:\n 1. inteira\n 2. meia\n");
+
+                                fflush(stdin);
+
+                                int entrada;
+
+                                scanf("%d", &entrada);
+                                dados[numDados-1].tipoIngresso = entrada;
+
+                                switch (entrada)
+                                {
+                                case 1:
+                                    printf("Você escolheu entrada inteira\n");
+                                break;
+                                case 2:
+                                    printf("Você escolheu entreda meia\n");
+                                break;
+                                default:
+                                    printf("Opção inválida");
+                                break;
+                                }
+
+                                printf("Aqui esta o código do ticket %.00000000000d\n", rand() %10000000);
+
+                                numDados++;
+
+                            }
+
+                            fclose("infoCli.csv");
                         }
                         else{
                             printf("Senha incorreta\n");
@@ -217,52 +315,97 @@ int main() {
                         printf("Email não cadastrado\n");
                     }
                 }
+                fclose("info.csv");
+
+
             break;
 
             case 3:
                 /*cadastro cliente*/
-                /*duvida se precisaria criar outra base struct ou se melhor linkar com outro
-                codigo essa parte ou somente criar outra base csv*/
 
-                file = fopen("infoCli.csv", "w");
+                fflush(stdin);
+
+                file2 = fopen("infoCli.csv", "w");
                 if(numDados < max_rec){
                     /*talez adicionar a solicitação de algum documento*/
                     printf("Digite seu nome: ");
                     fgets(dados[numDados].nomeCli, sizeof(dados[numDados].nomeCli), stdin);
                     dados[numDados].nomeCli[strcspn(dados[numDados].nomeCli, "\n")] = '\0';/*remove quebra de linha // strcspn calcula tamanho do segmento inicial*/
 
-                    printf("Digite seu telefone:");
+                    printf("Digite seu telefone: ");
                     fgets(dados[numDados].telefoneCli, sizeof(dados[numDados].telefoneCli), stdin);
                     dados[numDados].telefoneCli[strcspn(dados[numDados].telefoneCli, "\n")] = '\0';
 
-                    printf("Digite seu email:");
+                    printf("Digite seu email: ");
                     fgets(dados[numDados].emailCli, sizeof(dados[numDados].emailCli), stdin);
                     dados[numDados].emailCli[strcspn(dados[numDados].emailCli, "\n")] = '\0';
 
-                    printf("Digite sua cidade:");
+                    printf("Digite sua cidade: ");
                     fgets(dados[numDados].cidadeCli, sizeof(dados[numDados].cidadeCli), stdin);
                     dados[numDados].cidadeCli[strcspn(dados[numDados].cidadeCli, "\n")] = '\0';
 
-                    printf("Qual seu gênero?");
-                    //colocar como opções onde a pessoa digita a letra //colocar um switch para gravar //ver como declarar parametro quando prof responder
-                    printf("1. Mulher cis\n\n2. Homem cis\n\n3. Mulher trans\n\n4. Homem trans\n\n5. Não Binário\n\n6. Outro\n\n7. Prefiro não dizer\n\n");
-                    
+                    fflush(stdin);
+
+                    printf("Qual seu gênero?\n\n");
+                    printf("1. Mulher cis\n2. Homem cis\n3. Mulher trans\n4. Homem trans\n5. Não Binário\n6. Outro\n7. Prefiro não dizer\n");
+
                     int generoVar;
-                    scanf("%d\n", &generoVar);
+                    scanf("%d", &generoVar);
                     dados[numDados-1].genero = generoVar;
+
+                    fflush(stdin);
+
+                    switch (generoVar)
+                    {
+                    case 1:
+                        printf("Você selecionou mulher cis \n");
+                    break;
+
+                    case 2:
+                        printf("Você selecionou homem cis \n");
+                    break;
+
+                    case 3:
+                        printf("Você selecionou mulher trans \n");
+                    break;
+
+                    case 4:
+                        printf("Você selecionou homem trans\n");
+                    break;
+
+                    case 5:
+                        printf("Você selecionou não binário\n");
+                    break;
+
+                    case 6:
+                        printf("Você selecionou outro\n");
+                    break;
+
+                    case 7:
+                        printf("Você selecionou prefiro não dizer\n");
+                    break;
+                    
+                    default:
+                        printf("Opção inválida.\n");
+                    break;
+                    }
+
+                    fflush(stdin);
 
                     printf("Digite sua idade:\n");
 
                     int idadeVar;
-                    scanf("%d\n", &idadeVar);
+                    scanf("%d", &idadeVar);
                     dados[numDados-1].idade = idadeVar;
+
+                    fflush(stdin);
 
                     printf("Deseja um ingresso para qual horário?\n");
 
                     printf("Sessões diponiveis: \n 1. 9hrs \n 2. 12 hrs \n 3. 16 hrs \n 4. 20 hrs\n");
 
                     int horario;
-                    scanf("%d\n", &horario);
+                    scanf("%d", &horario);
                     dados[numDados-1].horarioSessao = horario;
                     
                     fflush(stdin);
@@ -296,7 +439,7 @@ int main() {
 
                     int entrada;
 
-                    scanf("%d\n", &entrada);
+                    scanf("%d", &entrada);
                     dados[numDados-1].tipoIngresso = entrada;
 
                     switch (entrada)
@@ -315,10 +458,25 @@ int main() {
                     printf("Aqui esta o código do seu ticket %.00000000000d\n", rand() %10000000);
 
                     numDados++;
+                    printf("e aqui");
 
+                    fflush(stdin);
+                }
+                printf("estou aqi");
+
+
+                if (file2 != NULL){
+                    escreverCSVCli(file2, dados, numDados);
+                    fclose(file2);
+                    printf("Dados salvos no arquivo 'infoCli.csv'.\n");
+                }
+                else{
+                    printf("Erro em salvar dados de clientes");
                 }
 
                 fclose("infoCli.csv");
+
+                printf("agr aqui");
 
             break;
            case 4:
@@ -688,17 +846,157 @@ int main() {
                 else{
                     printf("Nenhum registro encontrado.\n");
                 }
+                fclose(file);
+            break;
             case 7:
 
                 /*editar dados funcionários*/
                 /*talvez adicionar uma forma de login de administrador para acesso deste caso*/
+                printf("Digite o número do registro que deseja acessar 1-%d: \n", numRecord);
+                int registroEdicaoF;
+                scanf("%d", &registroEdicaoF);
+
+                fflush(stdin);
+
+                if (registroEdicaoF >= 1 && registroEdicaoF <= numRecord){ //verifica se o numero dado esta dentro da lista de registros disponiveis
+                    printf("Editando registro %d:\n", registroEdicaoF);
+
+                    printf("Digite o novo nome: \n");
+                    fgets(records[registroEdicaoF - 1].nome, sizeof(records[registroEdicaoF - 1].nome), stdin);
+                    records[registroEdicaoF - 1].nome[strcspn(records[registroEdicaoF - 1].nome, "\n")] = '\0';
+
+                    printf("Digite o novo telefone: \n");
+                    fgets(records[registroEdicaoF - 1].telefone, sizeof(records[registroEdicaoF - 1].telefone), stdin);
+                    records[registroEdicaoF - 1].telefone[strcspn(records[registroEdicaoF - 1].telefone, "\n")] = '\0';
+
+                    printf("Digite o novo email: \n");
+                    fgets(records[registroEdicaoF - 1].email, sizeof(records[registroEdicaoF - 1].email), stdin);
+                    records[registroEdicaoF - 1].email[strcspn(records[registroEdicaoF - 1].email, "\n")] = '\0';
+
+                    printf("Digite o novo bairro: \n");
+                    fgets(records[registroEdicaoF - 1].bairro, sizeof(records[registroEdicaoF - 1].bairro), stdin);
+                    records[registroEdicaoF - 1].bairro[strcspn(records[registroEdicaoF - 1].bairro, "\n")] = '\0';
+
+                    printf("Digite a nova cidade: \n");
+                    fgets(records[registroEdicaoF - 1].cidade, sizeof(records[registroEdicaoF - 1].cidade), stdin);
+                    records[registroEdicaoF - 1].cidade[strcspn(records[registroEdicaoF - 1].cidade, "\n")] = '\0';
+
+                    printf("Digite o novo pais: \n");
+                    fgets(records[registroEdicaoF - 1].pais, sizeof(records[registroEdicaoF - 1].pais), stdin);
+                    records[registroEdicaoF - 1].pais[strcspn(records[registroEdicaoF - 1].pais, "\n")] = '\0';
+
+                    printf("Digite a nova senha: \n");
+                    fgets(records[registroEdicaoF - 1].senha, sizeof(records[registroEdicaoF - 1].senha), stdin);
+                    records[registroEdicaoF - 1].senha[strcspn(records[registroEdicaoF - 1].senha, "\n")] = '\0';
+                   }
+                else{
+                        printf("Número de registro ínvalido.\n");
+                }
 
             break;
             case 8:
 
                 /*editar dados clientes*/
                 /*talvez adicionar uma forma de login de administrador para acesso deste caso*/
+                printf("Digite o número do registro a ser acessado 1-%d", numDados);
 
+                int registroEdicaoC;
+                scanf("%d", registroEdicaoC);
+
+                fflush(stdin);
+
+                printf("Digite o novo nome: ");
+                fgets(dados[registroEdicaoC - 1].nomeCli, sizeof(dados[registroEdicaoC - 1].nomeCli), stdin);
+                dados[registroEdicaoC - 1].nomeCli[strcspn(dados[registroEdicaoC - 1].nomeCli, "\n")] = '\0';
+
+                printf("Digite o novo telefone: ");
+                fgets(dados[registroEdicaoC - 1].telefoneCli, sizeof(dados[registroEdicaoC - 1].telefoneCli), stdin);
+                dados[registroEdicaoC - 1].telefoneCli[strcspn(dados[registroEdicaoC - 1].telefoneCli, "\n")] = '\0';
+
+                printf("Digite o novo email: ");
+                fgets(dados[registroEdicaoC - 1].emailCli, sizeof(dados[registroEdicaoC - 1].emailCli), stdin);
+                dados[registroEdicaoC - 1].emailCli[strcspn(dados[registroEdicaoC - 1].emailCli, "\n")] = '\0';
+
+                printf("Digite a nova cidade: ");
+                fgets(dados[registroEdicaoC - 1].cidadeCli, sizeof(dados[registroEdicaoC - 1].cidadeCli), stdin);
+                dados[registroEdicaoC - 1].cidadeCli[strcspn(dados[registroEdicaoC - 1].cidadeCli, "\n")] = '\0';
+
+                printf("Digite o novo gênero: \n");
+                printf("1. Mulher cis\n\n2. Homem cis\n\n3. Mulher trans\n\n4. Homem trans\n\n5. Não Binário\n\n6. Outro\n\n7. Prefiro não dizer\n\n");    
+                int generoVar;
+                scanf("%d", &generoVar);
+                dados[registroEdicaoC - 1].genero = generoVar;
+
+                printf("Digite a nova idade: ");
+                int idadeVar;
+                scanf("%d", &idadeVar);
+                dados[numDados-1].idade = idadeVar;
+
+                printf("Deseja mudar informações do ingresso também?\n");
+
+                printf("1. Sim\n2. Não\n");
+
+                int EdicaoIngresso;
+
+                scanf("%d", EdicaoIngresso);
+
+                if(EdicaoIngresso = 1){
+                    printf("Digite o novo horário da sessao: \n");
+                    printf("Sessões diponiveis: \n 1. 9hrs \n 2. 12 hrs \n 3. 16 hrs \n 4. 20 hrs\n");
+                    int horario;
+                    scanf("%d", &horario);
+                    dados[registroEdicaoC-1].horarioSessao = horario;
+
+                    
+                    switch (horario) //descobrir forma de puxar o dado do fgets
+                    {
+                    case 1:
+                        printf("Ingresso selecionado para as 9 hrs.\n");
+                    break;
+
+                    case 2:
+                        printf("Ingresso selecionado para as 12 hrs.\n");
+                    break;
+
+                    case 3:
+                        printf("Ingresso selecionado para as 16 hrs\n");
+                    break;
+
+                    case 4:
+                        printf("Ingresso selecionado para as 20 hrs\n");
+                    break;
+
+                    default:
+                        printf("Essa opção não esta dísponivel.\n");
+                    break;
+                    }
+                    
+                    printf("Digite o novo horario: \n");
+                    int entrada;
+                    scanf("%d", &entrada);
+                    dados[registroEdicaoC-1].tipoIngresso = entrada;
+
+                    switch (entrada)
+                    {
+                    case 1:
+                        printf("Você escolheu entrada inteira\n");
+                    break;
+                    case 2:
+                        printf("Você escolheu entreda meia\n");
+                    break;
+                    default:
+                        printf("Opção inválida");
+                    break;
+                    }
+
+                    printf("Aqui esta o novo código do ticket %.00000000000d\n", rand() %10000000);
+
+                }
+                else{
+                    printf("Edição de cadastro e ingressos concluída com sucesso!");
+                }
+
+                printf("Edição de cadastro concluída com sucesso!");
             break;
 
             case 9:
