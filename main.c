@@ -24,7 +24,7 @@ struct clientes {
     char telefoneCli[max_str_length];
     char emailCli[max_str_length];
     char cidadeCli[max_str_length];
-    int numeroTicket;
+    float numeroTicket;
     int horarioSessao;
     int tipoIngresso;
     int genero;
@@ -54,9 +54,9 @@ void lerCSV(FILE *file, struct Record records[], int *numRecord){
     (*numRecord)++);
 }
 
-void escreverCSVCli(FILE *file2, struct clientes dados[], int *numDados){
+void escreverCSVCli(FILE *file2, struct clientes dados[], int numDados){
     for (int i = 0; i < numDados; i++){
-        fprintf(file2, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+        fprintf(file2, "%s,%s,%s,%s,%f,%d,%d,%d,%d\n",
         dados[i].nomeCli, dados[i].emailCli, dados[i].cidadeCli,
         dados[i].telefoneCli, dados[i].numeroTicket, dados[i].horarioSessao,
         dados[i].tipoIngresso, dados[i].genero,  dados[i].idade);
@@ -92,6 +92,8 @@ int main() {
 
     printf("localização atual: %s\n", setlocale(LC_ALL, "Portuguese"));
 
+    int numRecord = 0;
+    int numDados = 0;
     struct Record records[max_rec];
     struct clientes dados[max_rec];
     struct tm *data_hora_atual;
@@ -103,8 +105,6 @@ int main() {
 
     printf("\nHora ........: %d:",data_hora_atual->tm_hour);//hora
 
-    int numRecord = 0;
-    int numDados = 0;
     char buscaEmail[max_str_length];
     char buscaSenha[max_str_length];
 
@@ -305,7 +305,7 @@ int main() {
 
                             }
 
-                            fclose("infoCli.csv");
+                            fclose(file2);
                         }
                         else{
                             printf("Senha incorreta\n");
@@ -315,7 +315,7 @@ int main() {
                         printf("Email não cadastrado\n");
                     }
                 }
-                fclose("info.csv");
+                fclose(file);
 
 
             break;
@@ -455,39 +455,42 @@ int main() {
                     break;
                     }
 
-                    printf("Aqui esta o código do seu ticket %.00000000000d\n", rand() %10000000);
+                    float ticket;
+
+                    ticket = rand()%10000000;
+
+                    printf("Aqui esta o código do seu ticket %.00000000000f\n", ticket);
+
+                    dados[numDados-1].numeroTicket = ticket;
+                    printf("TO AQUI");
 
                     numDados++;
-                    printf("e aqui");
+                }
 
                     fflush(stdin);
-                }
-                printf("estou aqi");
-
-
-                if (file2 != NULL){
-                    escreverCSVCli(file2, dados, numDados);
-                    fclose(file2);
-                    printf("Dados salvos no arquivo 'infoCli.csv'.\n");
-                }
-                else{
-                    printf("Erro em salvar dados de clientes");
-                }
-
-                fclose("infoCli.csv");
+                
+                fclose(file2);
 
                 printf("agr aqui");
 
             break;
-           case 4:
+            case 4:
 
                 fflush(stdin);
 
+                int buscaTicket;
+
                 printf("Digite o código do seu ticket:\n");
-
-                float ticket;
-
-                scanf("%f\n", &ticket);
+                fopen("infoCli.csv", "r");
+                
+                for (int i = 0; i < numDados; i++) {
+                    scanf("%d", &buscaTicket);
+                    //if(strcmp(dados[i].numeroTicket, buscaTicket) == 0){
+                        printf("ok");
+                    //}
+                     
+                    fclose(file2);
+                }
 
                 printf("ok, ingresso validado\n");
                 printf("Aproveite sua sessão.\n");
@@ -817,8 +820,88 @@ int main() {
                     printf("Essa não foi uma resposta válida\n");
                 break;
                 }
-                
 
+                printf("Agora ver um um pouco sobre a história dos Parques temáticos da disney:\n\n  Eles são destinos de entretenimento mundialmente famosos que desempenham um papel significativo na história do turismo e do entretenimento.\n\n");
+                printf("  O primeiro parque temático da Disney, a Disneyland na Califórnia, foi inaugurado em 17 de julho de 1955. Foi concebido por Walt Disney como um lugar onde famílias inteiras poderiam se divertir juntas, oferecendo uma experiência única e mágica. O parque original apresentava áreas temáticas, como Adventureland, Frontierland, Fantasyland e Tomorrowland, e rapidamente se tornou um sucesso.\n\n");
+                printf("  Os parques temáticos da Disney desempenharam um papel importante na formação da cultura popular. Os personagens, histórias e temas da Disney são reconhecidos globalmente, tornando-se parte integrante da infância de muitas gerações. Os parques também influenciaram a forma como as pessoas se divertem e consomem entretenimento.\n\n  Eles também são destinos de alto impacto econômico. Atraindo milhões de visitantes de todo o mundo, contribuindo para o turismo local e regional. Esses visitantes gastam dinheiro em hotéis, restaurantes, lojas e outras atividades, gerando empregos e estimulando o desenvolvimento econômico nas áreas circundantes.\n\n");
+                printf("  A Disney é conhecida por sua inovação em tecnologia e entretenimento. Os parques introduziram várias tecnologias e técnicas inovadoras, como áudio animatrônicos, sistemas de filas virtuais, realidade aumentada e aperfeiçoamento das experiências de realidade virtual, influenciando a indústria do entretenimento.\n\n  Os parques da Disney promovem a imaginação e a criatividade, transportando os visitantes para mundos mágicos e histórias emocionantes. Isso tem um impacto positivo na criatividade das crianças e adultos, inspirando-os a sonhar e acreditar no poder da imaginação.\n\n  Além disso, eles oferecem oportunidades educacionais, com exposições e atrações que ensinam sobre história, cultura, ciência e conservação ambiental. Essas experiências educativas ajudam a tornar o aprendizado mais envolvente e acessível.\n\n  A Disney enfatiza a experiência familiar, criando ambientes onde pessoas de todas as idades podem se divertir juntas. Isso reforça a importância do tempo de qualidade em família e da criação de memórias compartilhadas.\n\n  Promove valores como amizade, tolerância, coragem e a importância do trabalho em equipe, através das histórias e personagens que são incorporados nas atrações.\n\n  A Disney também tem mostrado preocupação com a conservação ambiental e promove a sustentabilidade em seus parques, ajudando a aumentar a conscientização sobre questões ambientais entre seus visitantes.\n\n");
+
+                printf("Hora de testar seus conhecimentos:\n\n");
+                printf("Qual são os valores que a Disney promove?\n\n");
+                printf("a) Amizade, tolerância e coragem.\nb) Amizade, inveja e coragem.\nc)Coragem, desonestidade e inveja.\nd) Coragem, tolerância e inveja.");
+
+                int resposta9;
+                scanf("%d", resposta9);
+
+                switch (resposta9)
+                {
+                case 'a':
+                        printf("Resposta correta!\n Parabéns\n");
+                break;
+                
+                default:
+                    printf("Resposta incorreta\n A resposta correta era:\n  Amizade, tolerância e coragem.\n");
+                    break;
+                }
+
+                printf("Vamos para o próximo tema: Museus e exposições da Disney.\n\n  A Disney possui vários museus e exposições dedicados a contar a história e celebrar a magia da empresa e seus personagens icônicos. Aqui estão alguns dos mais notáveis:\n\n");
+                printf("1. Walt Disney Family Museum:\n\n  Localizado em San Francisco, Califórnia, este museu é dedicado a Walt Disney, o fundador da Disney. Ele conta a história de sua vida, sua carreira no cinema de animação e seus inúmeros feitos, incluindo a criação da Disneylândia. O museu inclui uma coleção impressionante de artefatos, fotografias e documentos relacionados à vida de Walt Disney. Anteriormente uma base ativa do Exército e a defesa costeira mais forte da costa do Pacífico de 1846 a 1994, o Presidio agora serve como parque nacional e abriga o Museu da Família Walt Disney. Construído em 1897, o Quartel 104 - como era chamado anteriormente - fazia parte de uma fileira de enormes quartéis do Exército de tijolos na Montgomery Street, construídos para abrigar soldados. Muito antes de o museu se mudar, o prédio foi despojado de todas as suas históricas paredes internas, tetos e acabamentos pelo Exército.\n\n");
+                printf("2. Walt Disney Archive:\n\n  Os Arquivos Disney mantêm uma coleção extensa de artefatos, figurinos, memorabilia e documentos históricos relacionados à Disney. Embora não seja um museu público, os itens dos Arquivos frequentemente são emprestados para exposições temporárias em museus de todo o mundo.\n\n  Os Arquivos Walt Disney começaram em 1970, enquanto a Disney ainda se recuperava do falecimento de seu fundador, Walt Disney. Na época, o irmão de Walt e presidente do conselho, Roy O. Disney, queria garantir que, à medida que os principais imaginadores e animadores começassem a se aposentar, seu vasto conhecimento da história da Disney não fosse esquecido.\n\n  Quis o destino que Dave Smith, que na época pesquisava na biblioteca da UCLA, ouvisse executivos da Disney discutindo a criação de um arquivo da empresa. Dave decidiu dar um salto e apresentar-lhes um plano para colocar um em ação e, em 22 de junho de 1970, foi oficialmente contratado como o primeiro arquivista da Disney. Fale sobre estar no lugar certo na hora certa!\n\n");
+                printf("3. Exposições itinerantes:\n\n  A Disney frequentemente realiza exposições itinerantes que viajam para diferentes cidades. Essas exposições apresentam uma variedade de itens relacionados à Disney, como trajes, arte conceitual, animações e muito mais.\n\n  'A The Walt Disney Company completa 100 anos este ano, criada em 1923, a empresa fará uma exposição itinerante que remonta a trajetória da marca por meio de objetos e tecnologias imersivas.\n\n  Com um século de existência, serão elaboradas 10 galerias que contarão com fotos, figurinos, adereços e outros objetos originais. Além disso, serão usados áudios e elementos interativos e imersivos para enriquecer a experiência. '\n\n");
+                printf("4. Exposições em parques temáticos:\n\n  Os parques temáticos da Disney frequentemente apresentam exposições temporárias que celebram os filmes e personagens da Disney. Por exemplo, o em Orlando, Flórida, costuma sediar exposições relacionadas a filmes da Disney e da Pixar.\n\n  Lembre-se de que as exposições e museus da Disney podem variar ao longo do tempo e em diferentes específicos que você deseja visitar.\n\n");
+
+                printf("E aí? Qual dos parques você mais gostaria de visitar?\n\n a) Walt Disney Family Museum\nb) Walt Disney Archive\nc) Exposições itinerantes\nd) Exposições em parques temáticos\n\n");
+
+                int resposta10;
+                scanf("%d", resposta10);
+                switch (resposta10)
+                {
+                case 'a':
+                    printf("Que legal!! O Walt Disney Family Museum é um museu muito interessante para conhecer a história de Walt.");
+                    break;
+                case 'b':
+                    printf("Que escolha interessante! Esse museu tem muito sobre a história da disney nas telas, pena que não é aberto ao público, mas você ainda pode ter a oportunidade de ver os artefatos históricos nas exposições temporárias");
+                break;
+                case 'c':
+                    printf("Que legal!! Só corra e fique de olho nas datas no site para saber onde a exposição irá estar.");
+                break;
+                case 'd':
+                    printf("Que escolha interessante!! Nela você terá uma experiência única, pois a cada exposição trazem itens diferentes, inclusive alguns do Walt Disney Archive.");
+                break;
+                }
+
+                printf("Agora vamos ver um pouco sobre o impacto da Disney na educação:\n\n");
+                printf("  A Disney teve um impacto significativo no campo da educação de várias maneiras ao longo de muitos anos. Aqui estão algumas das principais contribuições e influências educacionais da Disney:\n\n");
+                printf("Aprendizado lúdico:\n  A Disney é conhecida por suas histórias envol ventes e personagens cativantes, que muitas vezes incorporam lições morais e éticas.\n\n  Isso torna os filmes da Disney e programas de televisão atrativos para crianças, ajudando a transmitir valores importantes de uma maneira divertida.\n\n");
+                printf("Parques temáticos educacionais:\n  A Disney opera parques temáticos em todo o mundo, como a Disneylândia e o Walt Disney World. Esses parques oferecem oportunidades educacionais em diversas áreas, desde ciência e tecnologia até história e cultura. Eles também promovem a criatividade e a imaginação, essenciais para o desenvolvimento da criança.\n\n");
+                printf("Materiais educacionais:\n  A Disney produz uma variedade de materiais educacionais, desde livros até jogos interativos. Muitos desses materiais usam personagens e histórias da Disney para ensinar conceitos educacionais, como leitura, matemática e ciências.\n\n");
+                printf("Programas de filmes educacionais na mídia:\n Além dos e programas de televisão, a Disney também produz conteúdo educacional direto, como o Disney Junior, que visa crianças pré-escolares e apresenta programas que ensinam habilidades sociais e emocionais, bem como conceitos educacionais básicos.\n");
+                printf("Inovações tecnológicas:\n  A Disney tem investido em tecnologias educacionais, como realidade virtual e aumentada, para melhorar a experiência de aprendiz agem e torná-la mais envolvente. Essas tecnologias são usadas em parques temáticos e outros contextos educacionais.\n\n");
+                printf("Programas de bolsas de estudo:\n  A Disney também oferece programas de bolsas de estudo e projetos para estudantes, apoiando a educação de jovens talentos em áreas relacionadas ao entretenimento, cinema, animação e muito mais.\n\n");
+                printf("No entanto, é importante observar que, embora a Disney tenha um impacto educacional positivo em muitos aspectos, também há preocupações sobre o marketing de produtos relacionados à marca Disney e seu impacto nas crianças, bem como questões de diversidade e representação em seu conteúdo.\n\n");
+
+                printf("Hora de testar seus conhecimentos:\n\n");
+                printf("Qual desses não é um impacto educacional da Disney citado na apresentação?\n\na) Parques temáticos educacionais\nb) Inovações tecnológicas\nc) Programas de bolsas de estudo\n d) Luta contra desigualdade social\n\n");
+
+                int resposta11;
+                scanf("%d", resposta11);
+                switch (resposta11)
+                {
+                case 'd':
+                    printf("Resposta correta!!");
+                break;
+                default:
+                    printf("Resposta errada\n A resposta correta era: \nA luta contra a desigualdade social\n\n");
+                break;
+                }
+
+                printf("Por último mas não menos importante, vamos falar sobre a influência da Disney na indústria do entretenimento!\n\n");
+                printf("  Há muito tempo, no início do século XX, um visionário chamado Walt Disney tinha um sonho extraordinário. Ele acreditava que o entretenimento podia ser uma  força poderosa para cativar e unir as pessoas. Com sua determinação e criatividade sem limites, ele lançou as bases para o império da Disney e, por conseguinte, sua influência duradoura na indústria do entretenimento.\n\n  Walt Disney nasceu em Chicago em 1901 e desenvolveu o seu interesse pelos desenhos muito cedo. Aos 4 anos, ele se mudou para uma fazenda, onde foi exposto à natureza, animais e a vida de uma pequena cidade. Isso fez com que a sua imaginação disparasse e pudesse expandir sem as limitações que uma cidade grande pode oferecer.\n\n  Walt Disney começou sua carreira desenhando cartuns e, posteriormente, fundou seu próprio estúdio de animação, o que viria a se tornar a Walt Disney Company. Em 1928, a criação de Mickey Mouse com Steamboat Willie marcou o início da revolução da animação, introduzindo som sincronizado em desenhos animados e estabelecendo um novo padrão de qualidade.\n\n  A primeira produção do Disney Brothers Cartoon Studio veio no ano da sua fundação. Era uma série chamada Alice Comedies (algo como 'Comédias da Alice'), que misturava motion picture de fotografia com animação. Foi a primeira de várias produções nesse estilo feitas pelo estúdio.\n\n  Ao longo dos anos, a Disney expandiu seus horizontes, entrando na televisão e abrindo o primeiro parque temático da Disney, a Disneyland, em 1955. A série 'O Mickey Mouse Club' e o programa “Walt Disney's Wonderful World of Color' conquistaram audiências na TV, enquanto os parques temáticos redefiniram o conceito de entretenimento familiar.");
+                printf("A expansão na mídia americana:\n\n  Apesar de ter lançado inúmeros filmes, programas e conteúdos televisivos, a Disney sempre fez isso em canais de terceiros. Canais já estabelecidos no cenário americano e mundial, entretanto em 1983, a empresa lançou o primeiro canal de televisão e o usou para distribuir seus conteúdos, além de promover as próprias atividades e eventos, como a inauguração dos seus parques temáticos.\n\n");
+                printf("Expansão midiática internacional: \n\n  Como visto, a Disney direcionou seus focos para a criação de um canal próprio em 1983. Pouco depois, a empresa expandiu o seu alcance, lançando canais em Taiwan, no Reino Unido e Malásia.\n\n  Havia um motivo específico para isso. Uma vez que tivesse cativado os fãs desses países, poderia divulgar e lucrar com os parques que seriam inaugurados nesses lugares.\n\n  A Disney soube muito bem como espalhar a sua influência para construir um império nos mais diferentes segmentos. Dito isso, mesmo com os parques sendo extremamente lucrativos, eles nunca tiraram o lugar que a mídia ocupa como principal fonte de receita da empresa.\n\n  Apesar do sucesso da empresa, o falecimento de Walt, em 1966, foi um baque do qual a Disney não se recuperou tão rápido. Principalmente na área criativa. Os filmes já não cativaram o público como anteriormente e a falta de personagens memoráveis começou a afetar até mesmo os parques temáticos.\n\n  Os parques da Disney utilizaram fortemente a população local para se manterem abertos. Entretanto, para atrair essa população, que visita o parque com frequência, mudanças pontuais são necessárias para manter o público interessado. A falta de grandes filmes ou personagens permitiu apenas algumas mudanças nos parques desde 1964.\n\n  Dessa forma, algumas das mais extraordinárias mudanças e expansões aconteceram durante a primeira década do mandato de Michael Eisner como CEO da Walt Disney Company. Mandato esse que durou 21 anos (1984-2005).\n\n  Como líder da companhia, ele foi ousado e calculista, realizando movimentos estratégicos que expandiram a Disney para mercados internacionais e mantiveram a empresa viva durante momentos difíceis.\n\n  A influência da Disney se estendeu ainda mais com a aquisição de outras marcas, como a Pixar, Marvel e Lucasfilm, permitindo a criação de franquias de sucesso como 'Toy Story', 'Os Vingadores' e 'Star Wars'.\n\n  Hoje,a Disney é um império global do entretenimento, influenciando a cultura popular, lançando tendências de mercado, e continuando a encantar o público com filmes de animação, parques temáticos e plataformas de streaming, como o Disney+.\n\n  Assim, a história de como a Disney desenvolveu sua influência na indústria do entretenimento é uma jornada extraordinária de inovação, criatividade e perseverança, que deixou um legado duradouro que continua a encantar e inspirar pessoas em todo o mundo.\n\n");
+                printf("E assim chegamos ao fim de nossa apresentação sobre a história dessa grande empresa que conquista a muitos anos os corações de todos.\nEspero que todos tenham gostado.");
+
+                //colocar algo que faça o ingresso não ser mais válido
             break;
 
             case 5:
@@ -989,7 +1072,10 @@ int main() {
                     break;
                     }
 
-                    printf("Aqui esta o novo código do ticket %.00000000000d\n", rand() %10000000);
+                    float ticket = rand()%10000;
+
+                    printf("Aqui esta o novo código do ticket %.00000000000f\n", ticket);
+                    dados[registroEdicaoC - 1].numeroTicket = ticket;
 
                 }
                 else{
@@ -1010,7 +1096,7 @@ int main() {
                 else{
                     printf("Erro ao abrir o arquivo para salvar os dados de funcionarios.\n");
                 }
-
+                
                 file2 = fopen("infoCli.csv", "w");
                 if (file2 != NULL){
                     escreverCSVCli(file2, dados, numDados);
