@@ -937,18 +937,17 @@ int main()
                 for (i = 1; i < numDados; i++)
                 {
                     printf("Cadastro %d:\n", i);
-                    printf("Nome: %s\n", dados[numDados].nomeCli);
-                    printf("Telefone: %s\n", dados[numDados].telefoneCli);
-                    printf("Email: %s\n", dados[numDados].emailCli);
-                    printf("Cidade: %s\n", dados[numDados].cidadeCli);
-                    printf("Ticket: %f\n", dados[numDados].numeroTicket);
-                    printf("Tipo do Ingresso: %d\n", dados[numDados].tipoIngresso);
-                    printf("Horário da sessão: %d\n", dados[numDados].horarioSessao);
-                    printf("genero: %d\n", dados[numDados].genero);
-                    printf("idade: %d\n", dados[numDados].idade);
+                    printf("Nome: %s\n", dados[i].nomeCli);
+                    printf("Telefone: %s\n", dados[i].telefoneCli);
+                    printf("Email: %s\n", dados[i].emailCli);
+                    printf("Cidade: %s\n", dados[i].cidadeCli);
+                    printf("Ticket: %f\n", dados[i].numeroTicket);
+                    printf("Tipo do Ingresso: %d\n", dados[i].tipoIngresso);
+                    printf("Horário da sessão: %d\n", dados[i].horarioSessao);
+                    printf("genero: %d\n", dados[i].genero);
+                    printf("idade: %d\n", dados[i].idade);
                     printf("\n");
                 }
-
             }
             else
             {
