@@ -33,7 +33,8 @@ struct clientes {
 
 /*escrever os dados no csv*/
 void escreverCSV(FILE *file, struct Record records[], int numRecord){
-    for (int i = 0; i < numRecord; i++){
+    int i;
+    for (i = 0; i < numRecord; i++){
         fprintf(file, "%s,%s,%s,%s,%s,%s,%s\n",
             records[i].nome, records[i].telefone,
             records[i].email, records[i].bairro,
@@ -54,8 +55,9 @@ void lerCSV(FILE *file, struct Record records[], int *numRecord){
     (*numRecord)++);
 }
 
-void escreverCSVCli(FILE *file2, struct clientes dados[], int *numDados){
-    for (int i = 0; i < numDados; i++){
+void escreverCSVCli(FILE *file2, struct clientes dados[], int numDados){
+    int i;
+    for (i = 0; i < numDados; i++){
         fprintf(file2, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
         dados[i].nomeCli, dados[i].emailCli, dados[i].cidadeCli,
         dados[i].telefoneCli, dados[i].numeroTicket, dados[i].horarioSessao,
@@ -184,6 +186,7 @@ int main() {
                     records[numRecord].senha[strcspn(records[numRecord].senha, "\n")] = '\0';
 
                     numRecord ++;
+                    printf("\nCadastro concluido!\n\n");
                 }
                 else{
                     printf("numero de cadastros máximo atingido");
@@ -202,7 +205,8 @@ int main() {
                 fgets(buscaSenha, sizeof(buscaSenha), stdin);
                 buscaSenha[strspn(buscaSenha, "\n")] = '\0';
 
-                for (int i = 0; i < numRecord; i++) {
+                int i;
+                for (i = 0; i < numRecord; i++) {
                     if(strcmp(records[i].email, buscaEmail) == 0){
                         printf(buscaEmail);
                         if(strcmp(records[i].senha, buscaSenha) == 0){
@@ -243,27 +247,29 @@ int main() {
                     fgets(dados[numDados].cidadeCli, sizeof(dados[numDados].cidadeCli), stdin);
                     dados[numDados].cidadeCli[strcspn(dados[numDados].cidadeCli, "\n")] = '\0';
 
+                    
                     printf("Qual seu gênero?");
                     //colocar como opções onde a pessoa digita a letra //colocar um switch para gravar //ver como declarar parametro quando prof responder
                     printf("1. Mulher cis\n\n2. Homem cis\n\n3. Mulher trans\n\n4. Homem trans\n\n5. Não Binário\n\n6. Outro\n\n7. Prefiro não dizer\n\n");
                     
                     int generoVar;
-                    scanf("%d\n", &generoVar);
-                    dados[numDados-1].genero = generoVar;
+                    fflush(stdin);
+                    scanf("%d", &generoVar);
+                    dados[numDados].genero = generoVar;
 
                     printf("Digite sua idade:\n");
 
                     int idadeVar;
-                    scanf("%d\n", &idadeVar);
-                    dados[numDados-1].idade = idadeVar;
+                    scanf("%d", &idadeVar);
+                    dados[numDados].idade = idadeVar;
 
                     printf("Deseja um ingresso para qual horário?\n");
 
                     printf("Sessões diponiveis: \n 1. 9hrs \n 2. 12 hrs \n 3. 16 hrs \n 4. 20 hrs\n");
 
                     int horario;
-                    scanf("%d\n", &horario);
-                    dados[numDados-1].horarioSessao = horario;
+                    scanf("%d", &horario);
+                    dados[numDados].horarioSessao = horario;
                     
                     fflush(stdin);
 
@@ -296,8 +302,8 @@ int main() {
 
                     int entrada;
 
-                    scanf("%d\n", &entrada);
-                    dados[numDados-1].tipoIngresso = entrada;
+                    scanf("%d", &entrada);
+                    dados[numDados].tipoIngresso = entrada;
 
                     switch (entrada)
                     {
@@ -312,7 +318,10 @@ int main() {
                     break;
                     }
 
-                    printf("Aqui esta o código do seu ticket %.00000000000d\n", rand() %10000000);
+                    int ticket = rand() %10000000;
+
+                    printf("Aqui esta o código do seu ticket %.00000000000d\n", ticket);
+                    dados[numDados].numeroTicket = ticket;
 
                     numDados++;
 
@@ -673,8 +682,9 @@ int main() {
                 /*talvez adicionar uma forma de login de administrador para acesso deste caso*/
                 file = fopen("info.csv", "r");
                 if(numRecord > 0){
-                    for(int i = 1; i < numRecord; i++){
-                        printf("Cadastro %d:\n", i + 1);
+                    int i;
+                    for(i = 1; i < numRecord; i++){
+                        printf("Cadastro %d:\n", i);
                         printf("Nome: %s\n", records[i].nome);
                         printf("Telefone: %s\n", records[i].telefone);
                         printf("Email: %s\n", records[i].email);
