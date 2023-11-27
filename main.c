@@ -90,10 +90,11 @@ bool validacaoIngresso(struct clientes dados[], int numDados, int buscaTicket){
     for(int i = 0 ; i < numDados ; i++){
         if(dados[i].numeroTicket == buscaTicket){
             //printf("ok, ingresso validado com sucesso");
-            return true;
+            return true; //retorna o número do registro se o cliente for encontrado
+            int registroCliente = i; 
         }
         else{
-            return false;
+            return false; //retorna -1 se  o ticket n for encontrado
             //printf("Ingresso ínvalido");
         }
     }
@@ -109,7 +110,16 @@ int gerarTicket(){
     return (rand() % (max - min + 1)) + min;
 }
 
-int validacaoHorario(struct clientes dados[]){
+bool validacaoHorario(struct clientes cliente){
+    time_t rawtime;
+    struct tm *tempo;
+
+    time(&rawtime);
+    tempo = localtime(&rawtime); //armazena o horario atual na variavel
+
+    int horaAtual = tempo->tm_hour * 100 + tempo->tm_min; //colocando no formato hr e min
+
+    return cliente.horarioSessao >= horaAtual;
 
 }
 
@@ -267,13 +277,13 @@ int main() {
                                 
                                 int generoVar;
                                 scanf("%d", &generoVar);
-                                dados[numDados-1].genero = generoVar;
+                                dados[numDados].genero = generoVar;
 
                                 printf("Digite a idade:\n");
 
                                 int idadeVar;
                                 scanf("%d", &idadeVar);
-                                dados[numDados-1].idade = idadeVar;
+                                dados[numDados].idade = idadeVar;
 
                                 printf("Deseja um ingresso para qual horário?\n");
 
@@ -281,7 +291,7 @@ int main() {
 
                                 int horario;
                                 scanf("%d", &horario);
-                                dados[numDados-1].horarioSessao = horario;
+                                dados[numDados].horarioSessao = horario;
                                 
                                 fflush(stdin);
 
@@ -315,7 +325,7 @@ int main() {
                                 int entrada;
 
                                 scanf("%d", &entrada);
-                                dados[numDados-1].tipoIngresso = entrada;
+                                dados[numDados].tipoIngresso = entrada;
 
                                 switch (entrada)
                                 {
@@ -384,7 +394,7 @@ int main() {
 
                     int generoVar;
                     scanf("%d", &generoVar);
-                    dados[numDados-1].genero = generoVar;
+                    dados[numDados].genero = generoVar;
 
                     fflush(stdin);
 
@@ -429,7 +439,7 @@ int main() {
 
                     int idadeVar;
                     scanf("%d", &idadeVar);
-                    dados[numDados-1].idade = idadeVar;
+                    dados[numDados].idade = idadeVar;
 
                     fflush(stdin);
 
@@ -441,7 +451,7 @@ int main() {
 
                     int horario;
                     scanf("%d", &horario);
-                    dados[numDados-1].horarioSessao = horario;
+                    dados[numDados].horarioSessao = horario;
                     
                     fflush(stdin);
 
@@ -475,7 +485,7 @@ int main() {
                     int entrada;
 
                     scanf("%d", &entrada);
-                    dados[numDados-1].tipoIngresso = entrada;
+                    dados[numDados].tipoIngresso = entrada;
 
                     switch (entrada)
                     {
@@ -494,7 +504,7 @@ int main() {
 
                     printf("Aqui esta o código do seu ticket %7.f\n", ticket);
 
-                    dados[numDados-1].numeroTicket = ticket;
+                    dados[numDados].numeroTicket = ticket;
                     printf("TO AQUI");
 
                     numDados++;
@@ -516,14 +526,30 @@ int main() {
                 printf("Digite o código do seu ticket:\n");
                 scanf("%f", &buscaTicket);
                 fopen("infoCli.csv", "r");
+
                 if(validacaoIngresso(dados, numDados, buscaTicket)){
                     printf("Ingresso válidado com sucesso\n");
+                        int registroCliente = validacaoIngresso(dados, numDados, buscaTicket);
+
+                        /*if(registroCliente != -1){
+                            if(validacaoHorario(dados[registroCliente])){
+                                printf("Horário válido, entrada permitida\n");
+                            }
+                            else{
+                                printf("Horário inválido, entrada recusada\n");
+                            }
+                        }
+                        else{
+                            printf("Cliente não encontrado\n");
+                        }*/
                 }
                 else{
                     printf("Ingresso Inválido");
 
                     return 0;
                 }
+
+
             
             
                 fclose(file2);
@@ -953,7 +979,7 @@ int main() {
                     printf("Telefone: %s\n", dados[i].telefoneCli);
                     printf("Email: %s\n", dados[i].emailCli);
                     printf("Cidade: %s\n", dados[i].cidadeCli);
-                    printf("Ticket: %f\n", dados[i].numeroTicket);
+                    printf("Ticket: %7.f\n", dados[i].numeroTicket);
                     printf("Tipo do Ingresso: %d\n", dados[i].tipoIngresso);
                     printf("Horário da sessão: %d\n", dados[i].horarioSessao);
                     printf("genero: %d\n", dados[i].genero);
