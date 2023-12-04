@@ -5,6 +5,7 @@
 #include <locale.h>  //definir idioma
 #include <time.h>    //definir horário
 #include <stdbool.h> //usar expressôes booleanas //usada para validar os tickets
+#include <Windows.h> //usar algumas expressões do widows (automatizar algumas coisas no console)
 
 #define max_rec 100
 #define max_str_length 50
@@ -70,7 +71,7 @@ void escreverCSVCli(FILE *file2, struct clientes dados[], int numDados)
         fprintf(file2, "%s,%s,%s,%s,%f,%d,%d,%d,%d,%d\n",
                 dados[i].nomeCli, dados[i].emailCli, dados[i].cidadeCli,
                 dados[i].telefoneCli, dados[i].numeroTicket, dados[i].horarioSessao,
-                dados[i].tipoIngresso, dados[i].genero, dados[i].idade, 
+                dados[i].tipoIngresso, dados[i].genero, dados[i].idade,
                 dados[i].utilizado);
     }
 }
@@ -106,11 +107,10 @@ bool validacaoIngresso(struct clientes dados[], int numDados, int buscaTicket)
     {
         if (dados[i].numeroTicket == buscaTicket && !dados[i].utilizado)
         {
-           // int registroCliente = i;
-            //dados[i].utilizado = true; //torna o ingresso inutilizavel
+            // int registroCliente = i;
+            // dados[i].utilizado = true; //torna o ingresso inutilizavel
             // printf("ok, ingresso validado com sucesso");
             return true; // retorna o número do registro se o cliente for encontrado
-
         }
         else
         {
@@ -131,7 +131,7 @@ int gerarTicket()
     return (rand() % (max - min + 1)) + min;
 }
 
-bool validacaoHorario(FILE file2,struct clientes dados[], int horarioSessao)
+bool validacaoHorario(FILE file2, struct clientes dados[], int horarioSessao)
 {
     time_t rawtime;
     struct tm *tempo;
@@ -193,37 +193,103 @@ int login(FILE *file, struct Record records[], int *numRecord)
     }
 }
 
+int pagamento(tipoIngresso)
+{
+    int opcao;
+
+    printf("----- PAGAMENTO -----\n\n");
+    printf("TIPO INRESSO: %d\n", tipoIngresso);
+    printf("Escolha a forma de pagamento: \n");
+    printf("1 - Cartão (credito / debito)\n");
+    printf("2 - Dinheiro / PIX\n");
+    scanf("%d", &opcao);
+
+    switch (opcao)
+    {
+    case 1:
+
+        if (tipoIngresso == 1)
+        {
+            printf("O cliente escolheu INTEIRA\n");
+            printf("Valor: 40,00R$\n");
+            printf("Siga as instruções da maquina de cartao\n");
+            printf("Pressione ENTER quando a transação for concluida\n");
+            // fflush(stdin);
+            char enter = 0;
+            while (enter != '\r' && enter != '\n')
+            {
+                enter = getchar();
+            }
+        }
+        else if (tipoIngresso == 2)
+        {
+            printf("O cliente escolheu MEIA-ENTRADA\n");
+            printf("Valor: 20,00R$\n");
+            printf("Siga as instruções da maquina de cartao:\n");
+            printf("Pressione ENTER quando a transação for concluida\n");
+            while (getchar() != '\n')
+                ;
+        }
+        break;
+
+    case 2:
+        if (tipoIngresso == 1)
+        {
+            printf("O cliente escolheu INTEIRA\n");
+            printf("Valor: 40,00R$\n");
+            printf("Pressione ENTER quando a transação for concluida\n");
+            while (getchar() != '\n')
+                ;
+        }
+        else if (tipoIngresso == 2)
+        {
+            printf("O cliente escolheu MEIA-ENTRADA\n");
+            printf("Valor: 20,00R$\n");
+            printf("Pressione ENTER quando a transação for concluida\n");
+            fflush(stdout);
+            char enter = 0;
+            while (enter != '\r' && enter != '\n')
+            {
+                enter = getchar();
+            }
+        }
+        break;
+
+    default:
+        printf("Opçao invalida.\n");
+        return 0;
+
+        break;
+    }
+}
+
 int main()
 {
-
+    Sleep(500);
+    system("cls");
     setlocale(LC_ALL, "Portuguese");
 
     printf("localização atual: %s\n", setlocale(LC_ALL, "Portuguese"));
 
-        int numRecord = 0;
-        int numDados = 0;
-        struct Record records[max_rec];
-        struct clientes dados[max_rec];
-        struct tm *data_hora_atual;
+    int numRecord = 0;
+    int numDados = 0;
+    struct Record records[max_rec];
+    struct clientes dados[max_rec];
+    struct tm *data_hora_atual;
 
     time_t segundos; // armazena time_t em segundos
     time(&segundos); // obtem tempo em segundos
 
     data_hora_atual = localtime(&segundos); // converte segundos para hora atual
 
-    printf("\nHora ........: %d:", data_hora_atual->tm_hour); // hora
+    printf("\nHora: %d:%2d\n\n", data_hora_atual->tm_hour, data_hora_atual->tm_min); // hora
 
-    char buscaEmail[max_str_length];
-    char buscaSenha[max_str_length];
-
-    printf("/////////////////////////////////////////////////////////////\n\n");
+    // printf("/////////////////////////////////////////////////////////////\n\n");
 
     printf("Bem vindos ao museu multimidia sobre o centenario da disney!!\n\n");
+    Sleep(1500);
     // imagem mickey Obs: necessita de ajustes
     // printf("                   .d88888888bo.\n                 .d8888888888888b.\n                 8888888888888888b\n                 888888888888888888\n                 888888888888888888\n                  Y8888888888888888\n            ,od888888888888888888P\n         .'`Y8P'```'Y8888888888P'\n       .'_   `  _     'Y88888888b\n      /  _`    _ `      Y88888888b   ____\n   _  | /  \  /  \      8888888888.d888888b.\n  d8b | | /|  | /|      8888888888d8888888888b\n 8888_\ \_|/  \_|/      d888888888888888888888b\n .Y8P  `'-.            d88888888888888888888888\n/          `          `      `Y8888888888888888\n|                        __    888888888888888P\n \                       / `   dPY8888888888P'\n  '._                  .'     .'  `Y888888P`\n     `''-.,__    ___.-'    .-'\n         `-._````  __..--'`\n             ``````" );
-
-    printf("////////////////////////////////////////////////////////////////\n\n");
-    printf("Como deseja proseguir?\n\n");
 
     /*carrega os dados do csv ao iniciar o código*/
     FILE *file = fopen("info.csv", "r");
@@ -242,18 +308,17 @@ int main()
 
     while (1)
     {
-        printf("Escolha uma opção:\n");
-        printf("1. Quero me tornar vendedor\n");
-        printf("2. Já sou vendedor cadastrado\n");
-        printf("3. Comprar ingresso\n");
-        printf("4. Entrar na apresentação\n");
-        printf("5. Listar clientes cadastrados\n");
-        printf("6. Listar funcionários cadastrados\n");
-        printf("7. Editar registro funcionário\n");
-        printf("8. Editar registro cliente\n");
-        printf("9. Mostrar estatisticas de vendas:");
-        printf("10. Salvar dados no arquivo\n");
-        printf("11. Sair\n");
+        printf("1 - Cadastro de funcionário\n");
+        printf("2 - Já sou vendedor cadastrado\n");
+        printf("3 - Comprar ingresso\n");
+        printf("4 - Entrar na apresentação\n");
+        printf("5 - Listar clientes cadastrados\n");
+        printf("6 - Listar funcionários cadastrados\n");
+        printf("7 - Editar registro funcionário\n");
+        printf("8 - Editar registro cliente\n");
+        printf("9 - Estatisticas dos clientes\n");
+        printf("10 - Sair\n");
+        printf("Escolha uma opção: ");
 
         int escolha;
         scanf("%d", &escolha);
@@ -298,13 +363,31 @@ int main()
                 fgets(records[numRecord].senha, sizeof(records[numRecord].senha), stdin);
                 records[numRecord].senha[strcspn(records[numRecord].senha, "\n")] = '\0';
 
+                /*salvar arquivo*/
+                file = fopen("info.csv", "w");
+                if (file != NULL)
+                {
+                    escreverCSV(file, records, numRecord);
+                    fclose(file);
+                    printf("Dados salvos no arquivo 'info.csv'.\n");
+                }
+                else
+                {
+                    printf("Erro ao abrir o arquivo para salvar os dados de funcionarios.\n");
+                }
+
                 numRecord++;
+
+                printf("Cadastro concluido!\n");
             }
             else
             {
                 printf("numero de cadastros máximo atingido");
             }
+            Sleep(1000);
+            system("cls");
             fclose(file);
+
             break;
 
         case 2:
@@ -402,18 +485,33 @@ int main()
                         break;
                     }
 
+                    pagamento(entrada);
+
                     float ticket = gerarTicket();
 
                     printf("Aqui esta o código do seu ticket %7.f\n", ticket);
 
                     dados[numDados].numeroTicket = ticket;
-    
+
+                    file2 = fopen("infoCli.csv", "w");
+                    if (file2 != NULL)
+                    {
+                        escreverCSVCli(file2, dados, numDados);
+                        fclose(file2);
+                        printf("Dados salvos no arquivo 'infoCli.csv'.\n");
+                    }
+                    else
+                    {
+                        printf("Erro em salvar dados de clientes\n");
+                    }
 
                     numDados++;
                 }
 
                 fclose(file2);
             }
+
+            puts("\n");
 
             break;
 
@@ -555,11 +653,26 @@ int main()
                     break;
                 }
 
+                pagamento(dados[numDados].tipoIngresso);
+
                 float ticket = gerarTicket();
 
                 printf("Aqui esta o código do seu ticket %7.f\n", ticket);
 
-                dados[numDados].numeroTicket = ticket;
+                dados[numDados - 1].numeroTicket = ticket;
+                // printf("TO AQUI");
+
+                file2 = fopen("infoCli.csv", "w");
+                if (file2 != NULL)
+                {
+                    escreverCSVCli(file2, dados, numDados);
+                    fclose(file2);
+                    printf("Dados salvos no arquivo 'infoCli.csv'.\n");
+                }
+                else
+                {
+                    printf("Erro em salvar dados de clientes\n");
+                }
 
                 numDados++;
             }
@@ -567,7 +680,6 @@ int main()
             fflush(stdin);
 
             fclose(file2);
-
 
             break;
         case 4:
@@ -1031,7 +1143,9 @@ int main()
                 {
                     printf("Nenhum registro encontrado.\n");
                 }
-            } else {
+            }
+            else
+            {
                 printf("Login incorreto\n");
             }
 
@@ -1227,62 +1341,34 @@ int main()
             printf("Edição de cadastro concluída com sucesso!");
             break;
         case 9:
-                //estatisticas de vendas
-                printf("Estatíscas de dados de clientes:\n");
+            // estatisticas de vendas
+            printf("Estatíscas de dados de clientes:\n");
 
-                file2 = fopen("infoCli.csv", "r");
+            file2 = fopen("infoCli.csv", "r");
 
-                printf("Cidades de origem:\n");
+            printf("Cidades de origem:\n");
 
-                int count = 1;
+            int count = 1;
 
-                for(int i = 1; i <= numDados; i++)
+            int i;
+            for (i = 1; i <= numDados; i++)
+            {
+                if (dados[i].cidadeCli != 0)
                 {
-                    if(dados[i].cidadeCli != 0)
-                    {
-                        int percentCity = (numDados/count) * 100;
-                        //arrumar a procentagem
-                        printf("Haviam %d vistantes da cidade %s , sendo %2.d %% dos vistantes totais.\n",count, dados[i].cidadeCli, percentCity);
-                        
-                        
-                        count++;
-                    }
-                    i++;
+                    int percentCity = (numDados / count) * 100;
+                    // arrumar a procentagem
+                    printf("Haviam %d vistantes da cidade %s , sendo %2.d %% dos vistantes totais.\n", count, dados[i].cidadeCli, percentCity);
 
+                    count++;
                 }
+                i++;
+            }
 
-                fclose(file2);
+            fclose(file2);
 
             break;
+
         case 10:
-            /*salvar arquivo*/
-            file = fopen("info.csv", "w");
-            if (file != NULL)
-            {
-                escreverCSV(file, records, numRecord);
-                fclose(file);
-                printf("Dados salvos no arquivo 'info.csv'.\n");
-            }
-            else
-            {
-                printf("Erro ao abrir o arquivo para salvar os dados de funcionarios.\n");
-            }
-
-            file2 = fopen("infoCli.csv", "w");
-            if (file2 != NULL)
-            {
-                escreverCSVCli(file2, dados, numDados);
-                fclose(file2);
-                printf("Dados salvos no arquivo 'infoCli.csv'.\n");
-            }
-            else
-            {
-                printf("Erro em salvar dados de clientes");
-            }
-
-            break;
-
-        case 11:
 
             /*sair sem salvar*/
             return 0;
