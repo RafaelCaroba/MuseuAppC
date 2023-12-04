@@ -32,6 +32,7 @@ struct clientes
     int tipoIngresso;
     int genero;
     int idade;
+    bool utilizado;
 };
 
 /*escrever os dados no csv*/
@@ -66,10 +67,11 @@ void escreverCSVCli(FILE *file2, struct clientes dados[], int numDados)
     int i;
     for (i = 0; i < numDados; i++)
     {
-        fprintf(file2, "%s,%s,%s,%s,%f,%d,%d,%d,%d\n",
+        fprintf(file2, "%s,%s,%s,%s,%f,%d,%d,%d,%d,%d\n",
                 dados[i].nomeCli, dados[i].emailCli, dados[i].cidadeCli,
                 dados[i].telefoneCli, dados[i].numeroTicket, dados[i].horarioSessao,
-                dados[i].tipoIngresso, dados[i].genero, dados[i].idade);
+                dados[i].tipoIngresso, dados[i].genero, dados[i].idade, 
+                dados[i].utilizado);
     }
 }
 
@@ -80,6 +82,7 @@ void lerCSVCli(FILE *file2, struct clientes dados[], int *numDados)
            dados[*numDados].nomeCli, dados[*numDados].emailCli, dados[*numDados].cidadeCli,
            dados[*numDados].telefoneCli, dados[*numDados].numeroTicket, dados[*numDados].horarioSessao,
            dados[*numDados].tipoIngresso, dados[*numDados].genero, dados[*numDados].idade,
+           dados[*numDados].utilizado,
 
            (*numDados)++);
 }
@@ -101,11 +104,13 @@ bool validacaoIngresso(struct clientes dados[], int numDados, int buscaTicket)
     int i;
     for (i = 0; i < numDados; i++)
     {
-        if (dados[i].numeroTicket == buscaTicket)
+        if (dados[i].numeroTicket == buscaTicket && !dados[i].utilizado)
         {
+           // int registroCliente = i;
+            //dados[i].utilizado = true; //torna o ingresso inutilizavel
             // printf("ok, ingresso validado com sucesso");
             return true; // retorna o número do registro se o cliente for encontrado
-            int registroCliente = i;
+
         }
         else
         {
@@ -126,7 +131,7 @@ int gerarTicket()
     return (rand() % (max - min + 1)) + min;
 }
 
-bool validacaoHorario(struct clientes cliente)
+bool validacaoHorario(FILE file2,struct clientes dados[], int horarioSessao)
 {
     time_t rawtime;
     struct tm *tempo;
@@ -136,7 +141,15 @@ bool validacaoHorario(struct clientes cliente)
 
     int horaAtual = tempo->tm_hour * 100 + tempo->tm_min; // colocando no formato hr e min
 
-    return cliente.horarioSessao >= horaAtual;
+    if (horarioSessao >= (horaAtual + 10))
+    {
+        printf("Horário válido\n");
+    }
+    else
+    {
+        printf("Ticket expirado\n");
+        return 0;
+    }
 }
 
 int login(FILE *file, struct Record records[], int *numRecord)
@@ -178,7 +191,6 @@ int login(FILE *file, struct Record records[], int *numRecord)
             return 0;
         }
     }
-    fclose(file);
 }
 
 int main()
@@ -188,11 +200,11 @@ int main()
 
     printf("localização atual: %s\n", setlocale(LC_ALL, "Portuguese"));
 
-    int numRecord = 0;
-    int numDados = 0;
-    struct Record records[max_rec];
-    struct clientes dados[max_rec];
-    struct tm *data_hora_atual;
+        int numRecord = 0;
+        int numDados = 0;
+        struct Record records[max_rec];
+        struct clientes dados[max_rec];
+        struct tm *data_hora_atual;
 
     time_t segundos; // armazena time_t em segundos
     time(&segundos); // obtem tempo em segundos
@@ -239,8 +251,9 @@ int main()
         printf("6. Listar funcionários cadastrados\n");
         printf("7. Editar registro funcionário\n");
         printf("8. Editar registro cliente\n");
-        printf("9. Salvar dados no arquivo\n");
-        printf("10. Sair\n");
+        printf("9. Mostrar estatisticas de vendas:");
+        printf("10. Salvar dados no arquivo\n");
+        printf("11. Sair\n");
 
         int escolha;
         scanf("%d", &escolha);
@@ -298,7 +311,6 @@ int main()
             /*fazer login*/
             if (login(file, records, &numRecord) == 1)
             {
-                printf("AQUIII\n");
                 file2 = fopen("infoCli.csv", "w");
                 if (numDados < max_rec)
                 {
@@ -345,7 +357,7 @@ int main()
 
                     fflush(stdin);
 
-                    switch (horario) // descobrir forma de puxar o dado do fgets
+                    switch (horario)
                     {
                     case 1:
                         printf("Ingresso selecionado para as 9 hrs.\n");
@@ -395,7 +407,7 @@ int main()
                     printf("Aqui esta o código do seu ticket %7.f\n", ticket);
 
                     dados[numDados].numeroTicket = ticket;
-                    printf("TO AQUI");
+    
 
                     numDados++;
                 }
@@ -482,7 +494,7 @@ int main()
 
                 int idadeVar;
                 scanf("%d", &idadeVar);
-                dados[numDados - 1].idade = idadeVar;
+                dados[numDados].idade = idadeVar;
 
                 fflush(stdin);
 
@@ -494,7 +506,7 @@ int main()
 
                 int horario;
                 scanf("%d", &horario);
-                dados[numDados - 1].horarioSessao = horario;
+                dados[numDados].horarioSessao = horario;
 
                 fflush(stdin);
 
@@ -528,7 +540,7 @@ int main()
                 int entrada;
 
                 scanf("%d", &entrada);
-                dados[numDados - 1].tipoIngresso = entrada;
+                dados[numDados].tipoIngresso = entrada;
 
                 switch (entrada)
                 {
@@ -547,8 +559,7 @@ int main()
 
                 printf("Aqui esta o código do seu ticket %7.f\n", ticket);
 
-                dados[numDados - 1].numeroTicket = ticket;
-                printf("TO AQUI");
+                dados[numDados].numeroTicket = ticket;
 
                 numDados++;
             }
@@ -557,7 +568,6 @@ int main()
 
             fclose(file2);
 
-            printf("agr aqui");
 
             break;
         case 4:
@@ -568,7 +578,7 @@ int main()
 
             printf("Digite o código do seu ticket:\n");
             scanf("%f", &buscaTicket);
-            fopen("infoCli.csv", "r");
+            file2 = fopen("infoCli.csv", "r");
             if (validacaoIngresso(dados, numDados, buscaTicket))
             {
                 printf("Ingresso válidado com sucesso\n");
@@ -600,10 +610,10 @@ int main()
             printf("  Agora que você já aprendeu como foi criada a disney hora de testar seu conhecimento:\n\n");
 
             printf("  Qual o nome do primeiro curta-metragem feita pelo Walt Disney?\n\n");
-            printf("a) Plane Crazy\n\n");
-            printf("b) Alice's Wonderland\n\n");
-            printf("c) Branca de neve e os sete anões\n\n");
-            printf("d) Steamboat Willie\n\n");
+            printf("a) Plane Crazy\n");
+            printf("b) Alice's Wonderland\n");
+            printf("c) Branca de neve e os sete anões\n");
+            printf("d) Steamboat Willie\n");
 
             fflush(stdin);
 
@@ -643,10 +653,10 @@ int main()
             printf("  Hora de testar seus conhecimentos: ");
 
             printf("Qual foi o primeiro personagem animado de destaque da carreira de Walt?\n\n");
-            printf("a) Oswald - O coelho sortudo\n\n");
-            printf("b) Mickey Mouse\n\n");
-            printf("c) Donald Duck\n\n");
-            printf("d) Tio Patinhas\n\n");
+            printf("a) Oswald - O coelho sortudo\n");
+            printf("b) Mickey Mouse\n");
+            printf("c) Donald Duck\n");
+            printf("d) Tio Patinhas\n");
 
             fflush(stdin);
 
@@ -700,10 +710,10 @@ int main()
 
             printf("Agora que já conheceu algum dos personagens hora do teste:\n\n");
             printf("Malévola é vilã de qual filme?\n\n");
-            printf("a)Frozen - Uma aventura congelante\n\n");
-            printf("b)A Pequena Sereia\n\n");
-            printf("c)A Bela Adormecida\n\n");
-            printf("d)Cinderela\n\n");
+            printf("a)Frozen - Uma aventura congelante\n");
+            printf("b)A Pequena Sereia\n");
+            printf("c)A Bela Adormecida\n");
+            printf("d)Cinderela\n");
 
             fflush(stdin);
 
@@ -738,10 +748,10 @@ int main()
 
             printf("Hora de testar seu conhecimento:\n\n");
             printf("Qual filme trouxe uma nova era para a história da animação?\n\n");
-            printf("a) Avatar\n\n");
-            printf("b) Toy Story\n\n");
-            printf("c) Plane Crazy\n\n");
-            printf("d) Frozen 2\n\n");
+            printf("a) Avatar\n");
+            printf("b) Toy Story\n");
+            printf("c) Plane Crazy\n");
+            printf("d) Frozen 2\n");
 
             fflush(stdin);
 
@@ -777,12 +787,12 @@ int main()
             printf("Tecnologia de Entretenimento Interativo:\n  A Disney incorpora uma variedade de tecnologias de entretenimento interativo em seus jogos para criar experiências envolventes que cativam fãs de todas as idades e fazem uso de suas propriedades intelectuais populares. Essas tecnologias proporcionam diversão e imersão, permitindo aos jogadores explorar mundos mágicos e interagir com personagens icônicos da Disney.\n\n");
             printf("  Estas são apenas algumas das muitas inovações tecnológicas que a Disney trouxe ao mundo do entretenimento e dos parques temáticos. A empresa continua a surpreender e encantar pessoas de todas as idades com seu compromisso em combinar a criatividade com a tecnologia de ponta. Esperamos que tenha desfrutado desta exposição sobre as inovações tecnológicas da Disney!\n\n");
 
-            printf("Hora de testar seu conhecimento:\n\n");
-            printf("A Disney MagicBand é uma:\n\n");
-            printf("a) Banda mágica de robôs autônomos que fazem shows pelo parque\n\n");
-            printf("b) Uma área de realidade aumentada nos parques\n\n");
+            printf("Hora de testar seu conhecimento:\n");
+            printf("A Disney MagicBand é uma:\n");
+            printf("a) Banda mágica de robôs autônomos que fazem shows pelo parque\n");
+            printf("b) Uma área de realidade aumentada nos parques\n");
             printf("c) Uma pulseira inteligente que agiliza os processos de entradas em brinquedos e compras dentro dos parques\n\n");
-            printf("d) Uma área de jogos interativos no parque\n\n");
+            printf("d) Uma área de jogos interativos no parque\n");
 
             fflush(stdin);
 
@@ -1216,8 +1226,35 @@ int main()
 
             printf("Edição de cadastro concluída com sucesso!");
             break;
-
         case 9:
+                //estatisticas de vendas
+                printf("Estatíscas de dados de clientes:\n");
+
+                file2 = fopen("infoCli.csv", "r");
+
+                printf("Cidades de origem:\n");
+
+                int count = 1;
+
+                for(int i = 1; i <= numDados; i++)
+                {
+                    if(dados[i].cidadeCli != 0)
+                    {
+                        int percentCity = (numDados/count) * 100;
+                        //arrumar a procentagem
+                        printf("Haviam %d vistantes da cidade %s , sendo %2.d %% dos vistantes totais.\n",count, dados[i].cidadeCli, percentCity);
+                        
+                        
+                        count++;
+                    }
+                    i++;
+
+                }
+
+                fclose(file2);
+
+            break;
+        case 10:
             /*salvar arquivo*/
             file = fopen("info.csv", "w");
             if (file != NULL)
@@ -1245,7 +1282,7 @@ int main()
 
             break;
 
-        case 10:
+        case 11:
 
             /*sair sem salvar*/
             return 0;
