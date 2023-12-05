@@ -267,9 +267,9 @@ int main()
 {
     Sleep(500);
     system("cls");
-    setlocale(LC_ALL, "Portuguese");
 
-    printf("localização atual: %s\n", setlocale(LC_ALL, "Portuguese"));
+    setlocale(LC_ALL, "");
+    setlocale(LC_ALL, "Portuguese");
 
     int numRecord = 0;
     int numDados = 0;
@@ -282,11 +282,11 @@ int main()
 
     data_hora_atual = localtime(&segundos); // converte segundos para hora atual
 
-    printf("\nHora: %d:%2d\n\n", data_hora_atual->tm_hour, data_hora_atual->tm_min); // hora
+    printf("\nHora: %2d:%2d\n\n", data_hora_atual->tm_hour, data_hora_atual->tm_min); // hora
 
-    // printf("/////////////////////////////////////////////////////////////\n\n");
+    printf("--------------------------------------------------------------------------------\n\n");
 
-    printf("Bem vindos ao museu multimidia sobre o centenario da disney!!\n\n");
+    printf("                BEM-VINDOS AO MUSEU MULTIMIDIA DOS 100 ANOS DA DISNEY!!\n\n");
     Sleep(1500);
     // imagem mickey Obs: necessita de ajustes
     // printf("                   .d88888888bo.\n                 .d8888888888888b.\n                 8888888888888888b\n                 888888888888888888\n                 888888888888888888\n                  Y8888888888888888\n            ,od888888888888888888P\n         .'`Y8P'```'Y8888888888P'\n       .'_   `  _     'Y88888888b\n      /  _`    _ `      Y88888888b   ____\n   _  | /  \  /  \      8888888888.d888888b.\n  d8b | | /|  | /|      8888888888d8888888888b\n 8888_\ \_|/  \_|/      d888888888888888888888b\n .Y8P  `'-.            d88888888888888888888888\n/          `          `      `Y8888888888888888\n|                        __    888888888888888P\n \                       / `   dPY8888888888P'\n  '._                  .'     .'  `Y888888P`\n     `''-.,__    ___.-'    .-'\n         `-._````  __..--'`\n             ``````" );
@@ -339,27 +339,27 @@ int main()
                 fgets(records[numRecord].nome, sizeof(records[numRecord].nome), stdin);
                 records[numRecord].nome[strcspn(records[numRecord].nome, "\n")] = '\0'; /*remove quebra de linha // strcspn calcula tamanho do segmento inicial*/
 
-                printf("Digite seu telefone:");
+                printf("Digite seu telefone: ");
                 fgets(records[numRecord].telefone, sizeof(records[numRecord].telefone), stdin);
                 records[numRecord].telefone[strcspn(records[numRecord].telefone, "\n")] = '\0';
 
-                printf("Digite seu email:");
+                printf("Digite seu email: ");
                 fgets(records[numRecord].email, sizeof(records[numRecord].email), stdin);
                 records[numRecord].email[strcspn(records[numRecord].email, "\n")] = '\0';
 
-                printf("Digite seu bairro:");
+                printf("Digite seu bairro: ");
                 fgets(records[numRecord].bairro, sizeof(records[numRecord].bairro), stdin);
                 records[numRecord].bairro[strcspn(records[numRecord].bairro, "\n")] = '\0';
 
-                printf("Digite sua cidade:");
+                printf("Digite sua cidade: ");
                 fgets(records[numRecord].cidade, sizeof(records[numRecord].cidade), stdin);
                 records[numRecord].cidade[strcspn(records[numRecord].cidade, "\n")] = '\0';
 
-                printf("Digite seu país:");
+                printf("Digite seu país: ");
                 fgets(records[numRecord].pais, sizeof(records[numRecord].pais), stdin);
                 records[numRecord].pais[strcspn(records[numRecord].pais, "\n")] = '\0';
 
-                printf("Digite sua senha:");
+                printf("Digite sua senha: ");
                 fgets(records[numRecord].senha, sizeof(records[numRecord].senha), stdin);
                 records[numRecord].senha[strcspn(records[numRecord].senha, "\n")] = '\0';
 
@@ -490,6 +490,7 @@ int main()
                     float ticket = gerarTicket();
 
                     printf("Aqui esta o código do seu ticket %7.f\n", ticket);
+                    Sleep(500);
 
                     dados[numDados].numeroTicket = ticket;
 
@@ -688,7 +689,7 @@ int main()
 
             float buscaTicket;
 
-            printf("Digite o código do seu ticket:\n");
+            printf("Digite o código do seu ticket: ");
             scanf("%f", &buscaTicket);
             file2 = fopen("infoCli.csv", "r");
             if (validacaoIngresso(dados, numDados, buscaTicket))
