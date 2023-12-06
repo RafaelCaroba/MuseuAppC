@@ -36,6 +36,7 @@ struct clientes
     int idade;
     bool utilizado;
     int nota;
+    char generoOutro[max_str_length];
 };
 
 /*escrever os dados no csv*/
@@ -70,22 +71,24 @@ void escreverCSVCli(FILE *file2, struct clientes dados[], int numDados)
     int i;
     for (i = 0; i < numDados; i++)
     {
-        fprintf(file2, "%s,%s,%s,%s,%f,%d,%d,%d,%d,%d,%s,%d\n",
+        fprintf(file2, "%s,%s,%s,%s,%f,%d,%d,%d,%d,%d,%s,%d,%s\n",
                 dados[i].nomeCli, dados[i].emailCli, dados[i].cidadeCli,
                 dados[i].telefoneCli, dados[i].numeroTicket, dados[i].horarioSessao,
                 dados[i].tipoIngresso, dados[i].genero, dados[i].idade,
-                dados[i].utilizado, dados[i].estadoCli, dados[i].nota);
+                dados[i].utilizado, dados[i].estadoCli, dados[i].nota,
+                dados[i].generoOutro);
     }
 }
 
 void lerCSVCli(FILE *file2, struct clientes dados[], int *numDados)
 {
-    char linha[max_str_length * 9];
-    sscanf(linha, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],]%49[^,],]%49[^,],%49s",
+    char linha[max_str_length * 13];
+    sscanf(linha, "%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],%49[^,],]%49[^,],]%49[^,],]%49[^,],%49s",
            dados[*numDados].nomeCli, dados[*numDados].emailCli, dados[*numDados].cidadeCli,
            dados[*numDados].telefoneCli, dados[*numDados].numeroTicket, dados[*numDados].horarioSessao,
            dados[*numDados].tipoIngresso, dados[*numDados].genero, dados[*numDados].idade,
            dados[*numDados].utilizado, dados[*numDados].estadoCli, dados[*numDados].nota,
+           dados[*numDados].generoOutro,
 
            (*numDados)++);
 }
@@ -102,21 +105,20 @@ void lerCSVCli(FILE *file2, struct clientes dados[], int *numDados)
     int tm_isdst; //indica horário de verão se for diferente de zero
 };*/
 
-bool validacaoIngresso(struct clientes dados[], int numDados, int buscaTicket)
+int validacaoIngresso(struct clientes dados[], int numDados, int buscaTicket)
 {
-    int i;
-    for (i = 0; i < numDados; i++)
+    for (int i = 0; i < numDados; i++)
     {
-        if (dados[i].numeroTicket == buscaTicket && !dados[i].utilizado)
+        if (dados[i].numeroTicket == buscaTicket /*&& !dados[i].utilizado*/)
         {
             // int registroCliente = i;
             // dados[i].utilizado = true; //torna o ingresso inutilizavel
             // printf("ok, ingresso validado com sucesso");
-            return true; // retorna o número do registro se o cliente for encontrado
+            return 1; // retorna o número do registro se o cliente for encontrado
         }
         else
         {
-            return false; // retorna -1 se  o ticket n for encontrado
+            return -1; // retorna -1 se  o ticket n for encontrado
             // printf("Ingresso ínvalido");
         }
     }
@@ -423,7 +425,50 @@ int main()
                     scanf("%d", &generoVar);
                     dados[numDados].genero = generoVar;
 
-                    printf("Digite a idade:\n");
+                    fflush(stdin);
+
+                    switch (generoVar)
+                    {
+                    case 1:
+                        printf("Você selecionou mulher cis \n");
+                        break;
+
+                    case 2:
+                        printf("Você selecionou homem cis \n");
+                        break;
+
+                    case 3:
+                        printf("Você selecionou mulher trans \n");
+                        break;
+
+                    case 4:
+                        printf("Você selecionou homem trans\n");
+                        break;
+
+                    case 5:
+                        printf("Você selecionou não binário\n");
+                        break;
+
+                    case 6:
+                        printf("Você selecionou outro\n");
+                        
+                        printf("Qual?\n");
+                        int outro;
+                        fgets(dados[numDados].generoOutro, sizeof(dados[numDados].generoOutro), stdin);
+                        dados[numDados].generoOutro[strcspn(dados[numDados].generoOutro, "\n")] = '\0';
+
+                        break;
+
+                    case 7:
+                        printf("Você selecionou prefiro não dizer\n");
+                        break;
+
+                    default:
+                        printf("Opção inválida.\n");
+                        break;
+                    }
+
+                        printf("Digite a idade:\n");
 
                     int idadeVar;
                     scanf("%d", &idadeVar);
@@ -482,7 +527,7 @@ int main()
                         printf("Você escolheu entreda meia\n");
                         break;
                     default:
-                        printf("Opção inválida");
+                        printf("Opção inválida\n");
                         break;
                     }
 
@@ -577,6 +622,12 @@ int main()
 
                 case 6:
                     printf("Você selecionou outro\n");
+                    
+                    printf("Qual?\n");
+                    int outro;
+                    fgets(dados[numDados].generoOutro, sizeof(dados[numDados].generoOutro), stdin);
+                    dados[numDados].generoOutro[strcspn(dados[numDados].generoOutro, "\n")] = '\0';
+
                     break;
 
                 case 7:
@@ -661,7 +712,7 @@ int main()
 
                 printf("Aqui esta o código do seu ticket %7.f\n", ticket);
 
-                dados[numDados - 1].numeroTicket = ticket;
+                dados[numDados].numeroTicket = ticket;
                 // printf("TO AQUI");
 
                 file2 = fopen("infoCli.csv", "w");
@@ -693,20 +744,22 @@ int main()
             printf("Digite o código do seu ticket: ");
             scanf("%f", &buscaTicket);
             file2 = fopen("infoCli.csv", "r");
-            if (validacaoIngresso(dados, numDados, buscaTicket))
+            if (validacaoIngresso(dados, numDados, buscaTicket) == 1)
             {
                 printf("Ingresso válidado com sucesso\n");
             }
             else
             {
-                printf("Ingresso Inválido");
+                printf("Ingresso Inválido\n");
 
-                return 0;
+                break;
             }
 
             fclose(file2);
 
             printf("Aproveite sua sessão.\n");
+
+            Sleep(1000);
 
             printf("/////////////////////////////////////////////////////////////////\n");
 
@@ -721,6 +774,7 @@ int main()
             printf("  Os estúdios de cinema da Disney continuaram a produzir filmes populares, incluindo 'A Dama e o Vagabundo', 'A Bela Adormecida' e 'Os 101 Dálmatas.' Um destaque foi o sucesso do musical 'Mary Poppins', que se tornou uma das maiores bilheteiras da história e recebeu cinco prêmios da Academia, incluindo Melhor Atriz para Julie Andrews.\n\n");
             printf("  Em 15 de dezembro de 1966, Walt Disney faleceu devido a complicações relacionadas a um câncer de pulmão. Seu irmão, Roy O. Disney, assumiu como presidente e CEO da empresa, renomeando o Disney World como Walt Disney World em homenagem à visão de seu irmão.\n\n");
             printf("  Hoje, a Disney é uma empresa diversificada, englobando redes de televisão, parques temáticos, produtos colecionáveis e até mesmo roupas. Os estúdios de cinema da Disney também operam como subsidiárias, incluindo Lucasfilm, Marvel Entertainment, Pixar, 20th Century Studios e Searchlight Pictures. A empresa é responsável por canais de televisão como ESPN, Star e National Geographic, bem como canais de programação infantil, como o Disney Channel. Além disso, no exterior, a Disney é a controladora da rede de televisão ABC.\n\n");
+
             printf("  Agora que você já aprendeu como foi criada a disney hora de testar seu conhecimento:\n\n");
 
             printf("  Qual o nome do primeiro curta-metragem feita pelo Walt Disney?\n\n");
@@ -752,6 +806,8 @@ int main()
             }
 
             fflush(stdin);
+
+            sleep(1000);
 
             printf("  Agora vamos conhecer um pouco mais sobre o famoso Walt Disney!\n\n");
             printf("  Walter Elias Disney, mais conhecido como Walt Disney, nasceu em Chicago em 5 de dezembro de 1901 e passou grande parte de sua infância em uma fazenda em Marceline, no Missouri. Sua infância foi marcada por desafios devido aos castigos impostos por seu pai, Elias Disney. Aos 16 anos, ele iniciou seu estudo de arte e se envolveu na Ordem Demolay.\n\n");
@@ -1137,7 +1193,35 @@ int main()
                         printf("Ticket: %7.f\n", dados[i].numeroTicket);
                         printf("Tipo do Ingresso: %d\n", dados[i].tipoIngresso);
                         printf("Horário da sessão: %d\n", dados[i].horarioSessao);
-                        printf("genero: %d\n", dados[i].genero);
+
+                        int genVar;
+                        dados[i].genero = genVar;
+
+                        switch (genVar)
+                        {
+                        case 1:
+                            printf("Gênero: Mulher Cisgênero\n");
+                            break;
+                        case 2:
+                            printf("Gênero: Homem Cisgênero\n");
+                            break;
+                        case 3:
+                            printf("Gênero: Mulher Transgênero\n");
+                            break;
+                        case 4:
+                            printf("Gênero: Homem Trangênero\n");
+                            break;
+                        case 5:
+                            printf("Gênero: Não Binário\n");
+                            break;
+                        case 7:
+                            printf("Gênero: Prefere Não Dizer\n");
+                            break;                        
+                        }
+                        if(dados[i].genero = 6){
+                            printf("Gênero: %s", dados[i].generoOutro);
+                        }
+
                         printf("idade: %d\n", dados[i].idade);
                         printf("\n");
                     }
@@ -1345,26 +1429,28 @@ int main()
             break;
         case 9:
             // estatisticas de vendas
-                        printf("Estat�scas de dados de clientes:\n");
+            printf("Estat�scas de dados de clientes:\n");
 
             file2 = fopen("infoCli.csv", "r");
 
-            printf("Cidades de origem:\n");
-
-            int count = 1;
+            printf("Cidades de origem:\n\n");
 
             for (int i = 1; i <= numDados; i++)
             {
                 if (dados[i].cidadeCli != 0)
                 {
+                    int count = 1;
                     int percentCity = (numDados / count) * 100;
                     // arrumar a procentagem
-                    printf("Haviam %d vistantes da cidade %s , sendo %2.d %% dos vistantes totais.\n", count, dados[i].cidadeCli, percentCity);
+                    printf("Haviam %d vistantes da cidade %s nas apresentações de hoje, sendo %.2d %% dos vistantes totais.\n", count, dados[i].cidadeCli, percentCity);
 
                     count++;
                 }
                 i++;
             }
+
+            printf("Estado de origem:\n\n");
+
             for(int i=0;i<=numDados; i++)
             {
                 if(dados[i].estadoCli != 0)
@@ -1372,20 +1458,178 @@ int main()
                     int count = 1;
                      int percentState = ((numDados/count) * 100)/2;
 
-                    printf("Haviam %d visitantes do estado %s, sendo %2.d %% dos visitantes totais\n", count, dados[i].estadoCli, percentState);
+                    printf("Haviam %d visitantes do estado %s nas apresentações de hoje, sendo %.2d %% dos visitantes totais\n", count, dados[i].estadoCli, percentState);
 
                     count++;
                 }
                 i++;
             }
+
+            printf("Idade:\n\n");
+
+            int visitantesKids = 0;
+            int visitantesTeen = 0;
+            int visitantesAdult = 0;
+            int visitantesOld = 0;
+
+            //crianças
+
             for(int i=0; i<=numDados; i++)
             {
                 if(dados[numDados].idade >=0 && dados[numDados].idade <=10)
                 {
-                        int count = 1;
-                        int percentKids = (numDados);
+                    visitantesKids++;
                 }
                 i++;
+            }
+          
+
+            //Adolescentes
+
+            for(int i = 1; i<=numDados; i++)
+            {
+                if(dados[numDados].idade >=11 && dados[numDados].idade <=17)
+                {
+                    visitantesTeen++;
+                }
+            }
+
+            //Adultos
+
+            for(int i = 1; i <= numDados; i++)
+            {
+                if(dados[numDados].idade >= 18 && dados[numDados].idade <= 60)
+                {
+                    visitantesAdult++;
+                }
+                i++;
+            }
+
+            //Idosos
+
+            for(int i = 1; i<=numDados; i++)
+            {
+                if(dados[numDados].idade >= 61)
+                {
+                    visitantesOld++;
+                }
+                i++;
+            }
+
+            float percentKids = visitantesKids/numDados * 100;
+            float percentTeen = visitantesTeen/numDados * 100;
+            float percentAdults = visitantesAdult/numDados * 100;
+            float percentOld = visitantesOld/numDados * 100;
+
+            /*int percentTotalIdade = percentKids + percentTeen + percentAdults + percentOld;
+
+            if(percentTotalIdade != 0)
+            {
+                percentKids = percentKids * 100 / percentTotalIdade;
+                percentTeen = percentTeen * 100 / percentTotalIdade;
+                percentAdults = percentAdults * 100 / percentTotalIdade;
+                percentOld = percentOld * 100 / percentTotalIdade;
+            }*/
+            
+            printf("Haviam %d visitantes crianças nas apresentações de hoje, sendo %.3f %% dos visitantes totais\n", visitantesKids, percentKids);
+            printf("Haviam %d visitantes adolescentes nas apresentações de hoje, sendo %.3f %% dos visitantes totais\n", visitantesTeen, percentTeen);
+            printf("Haviam %d visitantes adultos nas apresentações de hoje, sendo %.3f %% dos visitantes totais\n", visitantesAdult, percentAdults);
+            printf("Haviam %d visitantes idosos nas apresentações de hoje, sendo %.3f %% dos visitantes totais\n", visitantesOld, percentOld);
+
+
+            printf("Gêneros:\n\n");
+
+            //Mulher cisgênero
+
+            for(int i = 1; i<=numDados; i++)
+            {
+                if(dados[numDados].genero == 1)
+                {
+                    int count = 1;
+                    int percentMcis = (numDados/count) * 100;
+                    printf("Haviam %d visitantes mulheres cisgênero nas apresentações de hoje, sendo %.2d %% dos visitantes totais\n", count, percentMcis);
+                    count++;
+                }
+            }
+
+            //Homem Cisgênero
+
+            for(int i = 1; i <= numDados; i++)
+            {
+                if(dados[numDados].genero == 2)
+                {
+                    int count = 1;
+                    int percentHcis = (numDados/count) * 100;
+                    printf("Haviam %d visitantes homens cisgênero nas apresentações de hoje, sendo %.2d %% dos visitantes totais\n", count, percentHcis);
+                    count++;
+                }
+            }
+
+            //Mulher Transgênero
+
+            for(int i = 1; i <= numDados; i++)
+            {
+                if(dados[numDados].genero == 3)
+                {
+                    int count = 1;
+                    int percentMtrans = (numDados/count) * 100;
+                    printf("Haviam %d visitantes mulheres transgênero nas apresentações de hoje, sendo %.2d %% dos visitantes totais\n", count, percentMtrans);
+                    count++;
+                }
+            }
+
+            //Homem Transgênero
+
+            for(int i = 1; i <= numDados; i++)
+            {
+                if(dados[numDados].genero == 4)
+                {
+                    int count = 1;
+                    int percentHtrans = (numDados/count) * 100;
+                    printf("Haviam %d visitantes homens transgênero nas apresentações de hoje, sendo %.2d %% dos visitantes totais\n", count, percentHtrans);
+                    count++;
+                }
+            }
+
+            //Não Binário
+
+            for(int i = 1; i <= numDados; i++)
+            {
+                if(dados[numDados].genero == 5)
+                {
+                    int count = 1;
+                    int percentNbi = (numDados/count) * 100;
+                    printf("Haviam %d visitantes não binários nas apresentações de hoje, sendo %.2d %% dos visitantes totais\n", count, percentNbi);
+                    count++;
+                }
+            }
+
+            //Outro
+
+            for (int i = 1; i <= numDados; i++)
+            {
+                if (dados[i].generoOutro != 0)
+                {
+                    int count = 1;
+                    int percentOutro = (numDados / count) * 100;
+                    printf("Haviam %d vistantes %s nas apresentações de hoje, sendo %2.d %% dos vistantes totais.\n", count, dados[i].generoOutro, percentOutro);
+
+                    count++;
+                }
+                i++;
+            }
+
+            //Prefiro n dizer
+
+            for(int i = 1; i <= numDados; i++)
+            {
+                if(dados[numDados].genero == 7)
+                {
+                    int count = 1;
+                    int percentNdiz = (numDados/count) * 100;
+                    printf("Haviam %d visitantes homens cisgêneros nas apresentações de hoje, sendo %.2d %% dos visitantes totais\n", count, percentNdiz);
+                    count++;
+                }
             }
 
             fclose(file2);
