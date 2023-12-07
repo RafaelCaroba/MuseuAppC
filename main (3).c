@@ -105,20 +105,20 @@ void lerCSVCli(FILE *file2, struct clientes dados[], int *numDados)
     int tm_isdst; //indica horário de verão se for diferente de zero
 };*/
 
-int validacaoIngresso(struct clientes dados[], int numDados, int buscaTicket)
+bool validacaoIngresso(struct clientes dados[], int numDados, float buscaTicket)
 {
-    for (int i = 0; i < numDados; i++)
+    for (int i = 0; i <= numDados; i++)
     {
         if (dados[i].numeroTicket == buscaTicket /*&& !dados[i].utilizado*/)
         {
             // int registroCliente = i;
             // dados[i].utilizado = true; //torna o ingresso inutilizavel
             // printf("ok, ingresso validado com sucesso");
-            return 1; // retorna o número do registro se o cliente for encontrado
+            return true; // retorna o número do registro se o cliente for encontrado
         }
         else
         {
-            return -1; // retorna -1 se  o ticket n for encontrado
+            return false; // retorna -1 se  o ticket n for encontrado
             // printf("Ingresso ínvalido");
         }
     }
@@ -267,13 +267,43 @@ int pagamento(tipoIngresso)
     }
 }
 
+int AdminLogin()
+{
+
+    char login[15] = "admin";
+    char login1[15];
+    char senha[15] = "admin";
+    char senha1[15];
+    int login_efetuado = 0; // 0 - Falso e  1 - Verdadeiro
+
+    while (!login_efetuado)
+    {
+        printf("Digite o Login: ");
+        scanf("%s", login1);
+
+        printf("Digite a Senha: ");
+        scanf("%s", senha1);
+
+        if (strcmp(login, login1) == 0 && strcmp(senha, senha1) == 0)
+        {
+            printf("\n\nLOGADO!\n\n");
+            login_efetuado = 1;
+            return 1;
+        }
+        else
+            printf("\n\nDADOS INVALIDOS!\n\n");
+        return 0;
+    }
+}
+
+
 int main()
 {
     Sleep(500);
     system("cls");
 
-    setlocale(LC_ALL, "");
-    setlocale(LC_ALL, "Portuguese");
+    //setlocale(LC_ALL, "");
+    setlocale(LC_ALL, "Portuguese_Brazil");
 
     int numRecord = 0;
     int numDados = 0;
@@ -387,7 +417,7 @@ int main()
             {
                 printf("numero de cadastros máximo atingido");
             }
-            Sleep(1000);
+            
             system("cls");
             fclose(file);
 
@@ -405,17 +435,25 @@ int main()
                     fgets(dados[numDados].nomeCli, sizeof(dados[numDados].nomeCli), stdin);
                     dados[numDados].nomeCli[strcspn(dados[numDados].nomeCli, "\n")] = '\0'; /*remove quebra de linha // strcspn calcula tamanho do segmento inicial*/
 
+                    while (getchar() != '\n');
+
                     printf("Digite o telefone:");
                     fgets(dados[numDados].telefoneCli, sizeof(dados[numDados].telefoneCli), stdin);
                     dados[numDados].telefoneCli[strcspn(dados[numDados].telefoneCli, "\n")] = '\0';
+
+                    while (getchar() != '\n');
 
                     printf("Digite o email:");
                     fgets(dados[numDados].emailCli, sizeof(dados[numDados].emailCli), stdin);
                     dados[numDados].emailCli[strcspn(dados[numDados].emailCli, "\n")] = '\0';
 
+                    while (getchar() != '\n');
+
                     printf("Digite a cidade de origem:");
                     fgets(dados[numDados].cidadeCli, sizeof(dados[numDados].cidadeCli), stdin);
                     dados[numDados].cidadeCli[strcspn(dados[numDados].cidadeCli, "\n")] = '\0';
+
+                    while (getchar() != '\n');
 
                     printf("Qual o gênero?");
                     // colocar como opções onde a pessoa digita a letra //colocar um switch para gravar //ver como declarar parametro quando prof responder
@@ -424,6 +462,7 @@ int main()
                     int generoVar;
                     scanf("%d", &generoVar);
                     dados[numDados].genero = generoVar;
+                    while (getchar() != '\n');
 
                     fflush(stdin);
 
@@ -473,6 +512,7 @@ int main()
                     int idadeVar;
                     scanf("%d", &idadeVar);
                     dados[numDados].idade = idadeVar;
+                    getchar();
 
                     fflush(stdin);
 
@@ -483,6 +523,7 @@ int main()
                     int horario;
                     scanf("%d", &horario);
                     dados[numDados].horarioSessao = horario;
+                    while (getchar() != '\n');
 
                     fflush(stdin);
 
@@ -517,6 +558,7 @@ int main()
 
                     scanf("%d", &entrada);
                     dados[numDados].tipoIngresso = entrada;
+                    while (getchar() != '\n');
 
                     switch (entrada)
                     {
@@ -744,7 +786,7 @@ int main()
             printf("Digite o código do seu ticket: ");
             scanf("%f", &buscaTicket);
             file2 = fopen("infoCli.csv", "r");
-            if (validacaoIngresso(dados, numDados, buscaTicket) == 1)
+            if (validacaoIngresso(dados, numDados, buscaTicket))
             {
                 printf("Ingresso válidado com sucesso\n");
             }
@@ -758,8 +800,6 @@ int main()
             fclose(file2);
 
             printf("Aproveite sua sessão.\n");
-
-            Sleep(1000);
 
             printf("/////////////////////////////////////////////////////////////////\n");
 
@@ -788,6 +828,7 @@ int main()
             char resposta1;
 
             scanf("%c", &resposta1);
+            while (getchar() != '\n');
 
             switch (resposta1)
             {
@@ -807,7 +848,7 @@ int main()
 
             fflush(stdin);
 
-            sleep(1000);
+            
 
             printf("  Agora vamos conhecer um pouco mais sobre o famoso Walt Disney!\n\n");
             printf("  Walter Elias Disney, mais conhecido como Walt Disney, nasceu em Chicago em 5 de dezembro de 1901 e passou grande parte de sua infância em uma fazenda em Marceline, no Missouri. Sua infância foi marcada por desafios devido aos castigos impostos por seu pai, Elias Disney. Aos 16 anos, ele iniciou seu estudo de arte e se envolveu na Ordem Demolay.\n\n");
@@ -833,6 +874,7 @@ int main()
             char resposta2;
 
             scanf("%c", &resposta2);
+            while (getchar() != '\n');
 
             fflush(stdin);
 
@@ -888,6 +930,7 @@ int main()
             fflush(stdin);
 
             char resposta3;
+            while (getchar() != '\n');
 
             scanf("%c", &resposta3);
 
@@ -928,6 +971,7 @@ int main()
             char resposta4;
 
             scanf("%c", &resposta4);
+            while (getchar() != '\n');
 
             switch (resposta4)
             {
@@ -969,6 +1013,7 @@ int main()
             char resposta5;
 
             scanf("%c", &resposta5);
+            while (getchar() != '\n');
 
             switch (resposta5)
             {
@@ -1002,6 +1047,7 @@ int main()
             char resposta6;
 
             scanf("%c", &resposta6);
+            while (getchar() != '\n');
 
             switch (resposta6)
             {
@@ -1034,6 +1080,7 @@ int main()
             char resposta7;
 
             scanf("%c", &resposta7);
+            while (getchar() != '\n');
 
             switch (resposta7)
             {
@@ -1068,6 +1115,7 @@ int main()
             char resposta8;
 
             scanf("%c", &resposta8);
+            while (getchar() != '\n');
 
             switch (resposta8)
             {
@@ -1102,6 +1150,7 @@ int main()
 
             int resposta9;
             scanf("%d", resposta9);
+            while (getchar() != '\n');
 
             switch (resposta9)
             {
@@ -1124,6 +1173,7 @@ int main()
 
             int resposta10;
             scanf("%d", resposta10);
+            while (getchar() != '\n');
             switch (resposta10)
             {
             case 'a':
@@ -1155,6 +1205,7 @@ int main()
 
             int resposta11;
             scanf("%d", resposta11);
+            while (getchar() != '\n');
             switch (resposta11)
             {
             case 'd':
